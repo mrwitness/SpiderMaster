@@ -1,5 +1,6 @@
 package wuxian.me.spidermaster.master.agentcontroll;
 
+import sun.security.provider.ConfigFile;
 import wuxian.me.spidercommon.model.SpiderFeature;
 
 import java.util.ArrayList;
@@ -16,13 +17,22 @@ import java.util.List;
  */
 public class Spider {
 
-    private List<SpiderFeature> featureList = new ArrayList<SpiderFeature>();
+    private String name;
+    private String pattern;
 
-    public void addFeature(SpiderFeature feature) {
-        if (feature == null) {
-            return;
+    private Spider(String name,String pattern) {
+        this.name = name;
+        this.pattern = pattern;
+    }
+
+    public static Spider fromFeature(SpiderFeature feature) {
+
+        if(feature == null) {
+            return null;
         }
 
-        featureList.add(feature);
+        return new Spider(feature.className,feature.urlPattern);
     }
+
+
 }

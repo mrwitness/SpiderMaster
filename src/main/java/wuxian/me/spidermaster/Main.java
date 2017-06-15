@@ -20,6 +20,7 @@ public class Main {
     private SignalManager signalManager = new SignalManager();
 
     public void start() {
+
         SpiderConfig.init();
         ShellUtil.init();
 
@@ -32,9 +33,10 @@ public class Main {
             }
         });
 
-        if (SpiderConfig.spiderMode == 0) {  //agent
+        if (SpiderConfig.spiderMode == 0) {     //agent mode
+
             startAgent();
-        } else {  //master
+        } else {                                //master mode
             startMaster();
         }
     }

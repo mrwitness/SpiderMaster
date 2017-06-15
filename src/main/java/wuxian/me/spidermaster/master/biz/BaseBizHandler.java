@@ -1,7 +1,7 @@
 package wuxian.me.spidermaster.master.biz;
 
 
-import wuxian.me.spidermaster.util.RpcBizName;
+import wuxian.me.spidermaster.util.RpcMethodName;
 
 /**
  * Created by wuxian on 11/6/2017.
@@ -9,7 +9,7 @@ import wuxian.me.spidermaster.util.RpcBizName;
 public abstract class BaseBizHandler implements IBizHandler {
 
     public final String getMethodName() {
-        RpcBizName annotation = (getClass().getAnnotation(RpcBizName.class));
+        RpcMethodName annotation = (getClass().getAnnotation(RpcMethodName.class));
         if (annotation == null) {
             return "";
         }
@@ -21,6 +21,4 @@ public abstract class BaseBizHandler implements IBizHandler {
 
         return method;
     }
-
-
 }

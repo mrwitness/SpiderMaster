@@ -2,8 +2,8 @@ package wuxian.me.spidermaster.master;
 
 import com.sun.istack.internal.NotNull;
 import wuxian.me.spidercommon.util.IpPortUtil;
-import wuxian.me.spidermaster.master.biz.RegisterHandler;
-import wuxian.me.spidermaster.master.core.BizHandlerRegister;
+import wuxian.me.spidermaster.master.biz.AgentRegisterHandler;
+import wuxian.me.spidermaster.master.core.BizHandlerRegistration;
 import wuxian.me.spidermaster.util.exception.IpPortNotValidException;
 
 /**
@@ -30,7 +30,7 @@ public class SpiderMaster {
     }
 
     public void start() {
-        BizHandlerRegister.registerBizHandler(new RegisterHandler());
+        BizHandlerRegistration.registerBizHandler(new AgentRegisterHandler());
 
         this.server.start();
     }

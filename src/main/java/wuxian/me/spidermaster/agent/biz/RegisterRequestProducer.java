@@ -3,7 +3,7 @@ package wuxian.me.spidermaster.agent.biz;
 import wuxian.me.spidercommon.model.SpiderFeature;
 import wuxian.me.spidermaster.agent.rpccore.RequestIdGen;
 import wuxian.me.spidermaster.rpc.RpcRequest;
-import wuxian.me.spidermaster.util.RpcBizName;
+import wuxian.me.spidermaster.util.RpcMethodName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * <p>
  */
 
-@RpcBizName(methodName = "register")
+@RpcMethodName(methodName = "register")
 public class RegisterRequestProducer extends BaseRequestProducer {
 
     public List<String> classList = null;

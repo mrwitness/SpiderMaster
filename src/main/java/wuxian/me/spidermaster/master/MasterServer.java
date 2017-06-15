@@ -10,8 +10,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
+import wuxian.me.spidermaster.master.agentcontroll.ConnectionManager;
 import wuxian.me.spidermaster.master.core.AgentRpcRequestHandler;
-import wuxian.me.spidermaster.master.core.DummyInboundHandler;
 import wuxian.me.spidermaster.rpc.RpcDecoder;
 import wuxian.me.spidermaster.rpc.RpcEncoder;
 import wuxian.me.spidermaster.rpc.RpcRequest;
@@ -53,6 +53,8 @@ public class MasterServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
 
+                            ConnectionManager.recordConnection(socketChannel);
+
                             List<Class<?>> classList = new ArrayList<Class<?>>();
                             classList.add(RpcResponse.class);
                             classList.add(RpcRequest.class);
@@ -69,8 +71,7 @@ public class MasterServer {
                     .option(ChannelOption.AUTO_READ, false)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-
-            LogManager.info("Begin to bind");
+            LogManager.info("Master Server begin to bind port: "+port);
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
 

@@ -26,7 +26,6 @@ public class SpiderAgent {
 
     public static void init() {
         SpiderConfig.init();
-        //ShellUtil.init();
     }
 
     public SpiderAgent() {

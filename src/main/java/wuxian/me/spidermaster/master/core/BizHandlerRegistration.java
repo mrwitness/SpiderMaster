@@ -2,7 +2,7 @@ package wuxian.me.spidermaster.master.core;
 
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidermaster.master.biz.IBizHandler;
-import wuxian.me.spidermaster.util.RpcBizName;
+import wuxian.me.spidermaster.util.RpcMethodName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,12 +10,13 @@ import java.util.Map;
 /**
  * Created by wuxian on 11/6/2017.
  * <p>
+ * master能够处理的业务必须在这里注册
  */
-public class BizHandlerRegister {
+public class BizHandlerRegistration {
 
     private static Map<String, IBizHandler> handlerMap = new HashMap<String, IBizHandler>();
 
-    private BizHandlerRegister() {
+    private BizHandlerRegistration() {
     }
 
 
@@ -23,7 +24,7 @@ public class BizHandlerRegister {
         if (handler == null) {
             return;
         }
-        RpcBizName annotation = (handler.getClass().getAnnotation(RpcBizName.class));
+        RpcMethodName annotation = (handler.getClass().getAnnotation(RpcMethodName.class));
         if (annotation == null) {
             return;
         }
@@ -38,11 +39,10 @@ public class BizHandlerRegister {
         }
 
         handlerMap.put(method, handler);
-
     }
 
     @Nullable
-    public static IBizHandler getHandlerBy(String methodName) {
+    public static IBizHandler findHandlerBy(String methodName) {
         if (methodName == null || methodName.length() == 0) {
             return null;
         }

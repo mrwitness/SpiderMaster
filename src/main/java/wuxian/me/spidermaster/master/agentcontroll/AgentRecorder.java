@@ -8,14 +8,27 @@ import java.util.Set;
  * Created by wuxian on 18/5/2017.
  * <p>
  * 记录所有agent
- * <p>
- * Todo
  */
 public class AgentRecorder {
 
-    private Set<Agent> agentSet = Collections.synchronizedSet(new HashSet<Agent>());
+    private static Set<Agent> agentSet = Collections.synchronizedSet(new HashSet<Agent>());
 
     private AgentRecorder() {
+    }
+
+    public static void recordAgent(Agent agent) {
+
+        if(agent == null) {
+            return;
+        }
+
+        if(!agentSet.contains(agent)) {
+            synchronized (agentSet) {
+                if(!agentSet.contains(agent)) {
+                    agentSet.add(agent);
+                }
+            }
+        }
     }
 
 

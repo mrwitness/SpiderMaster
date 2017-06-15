@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.rpc.client;
+package wuxian.me.spidermaster.rpc;
 
 import wuxian.me.spidermaster.rpc.RpcRequest;
 import wuxian.me.spidermaster.rpc.RpcResponse;
@@ -40,9 +40,8 @@ public class RpcProxy {
                         String[] array = serverAddress.split(":");
                         String host = array[0];
                         int port = Integer.parseInt(array[1]);
-
-                        RpcClient client = new RpcClient(host, port);
-                        RpcResponse response = client.send(request);
+                        //RpcClient client = new RpcClient(host, port);
+                        //RpcResponse response = client.send(request);
 
                         /*
                         if (response.isError()) {

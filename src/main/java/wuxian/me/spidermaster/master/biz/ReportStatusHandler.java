@@ -1,7 +1,7 @@
 package wuxian.me.spidermaster.master.biz;
 
 import io.netty.channel.socket.SocketChannel;
-import wuxian.me.spidermaster.util.RpcBizName;
+import wuxian.me.spidermaster.util.RpcMethodName;
 import wuxian.me.spidermaster.rpc.RpcRequest;
 
 /**
@@ -10,7 +10,7 @@ import wuxian.me.spidermaster.rpc.RpcRequest;
  * Todo:
  */
 
-@RpcBizName(methodName = "reportStatus")
+@RpcMethodName(methodName = "reportStatus")
 public class ReportStatusHandler extends BaseBizHandler {
 
     public void handleRequest(RpcRequest request, SocketChannel channel) {

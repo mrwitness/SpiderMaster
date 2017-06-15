@@ -30,4 +30,44 @@ public class Agent {
 
     //当前agent上工作着哪些spider
     private List<Spider> spiderList = new ArrayList<Spider>();
+
+    public List<StatusEnum> getStatusList() {
+        return statusList;
+    }
+
+    public void setStatusList(List<StatusEnum> statusList) {
+        this.statusList = statusList;
+    }
+
+    public StatusEnum getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(StatusEnum currentState) {
+        this.currentState = currentState;
+    }
+
+    public Proxy getCurrentProxy() {
+        return currentProxy;
+    }
+
+    public void setCurrentProxy(Proxy currentProxy) {
+        this.currentProxy = currentProxy;
+    }
+
+    public SocketChannel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(SocketChannel channel) {
+        this.channel = channel;
+    }
+
+    public List<Spider> getSpiderList() {
+        return spiderList;
+    }
+
+    public void setSpiderList(List<Spider> spiderList) {
+        this.spiderList = spiderList;
+    }
 }

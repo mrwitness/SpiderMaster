@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.master.core;
+package wuxian.me.spidermaster.master;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

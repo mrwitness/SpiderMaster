@@ -1,6 +1,7 @@
 package wuxian.me.spidermaster.master.agentcontroll;
 
 import io.netty.channel.socket.SocketChannel;
+import wuxian.me.spidercommon.log.LogManager;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,8 +23,16 @@ public class ConnectionManager {
     }
 
     public static void recordConnection(SocketChannel channel) {
+        if(channel == null) {
+            return;
+        }
 
-        channelSet.add(channel);
+        LogManager.info("ConnectionManager.recordConnection, channel: "+channel.toString());
+        if(!channelSet.contains(channel)) {
+
+            channelSet.add(channel);
+            return;
+        }
     }
 
 }

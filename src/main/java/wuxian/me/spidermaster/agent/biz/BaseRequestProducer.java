@@ -1,6 +1,6 @@
 package wuxian.me.spidermaster.agent.biz;
 
-import wuxian.me.spidermaster.util.RpcBizName;
+import wuxian.me.spidermaster.util.RpcMethodName;
 
 /**
  * Created by wuxian on 11/6/2017.
@@ -8,7 +8,7 @@ import wuxian.me.spidermaster.util.RpcBizName;
 public abstract class BaseRequestProducer implements IRequestProducer {
 
     protected final String getRpcBizName() {
-        RpcBizName annotation = (getClass().getAnnotation(RpcBizName.class));
+        RpcMethodName annotation = (getClass().getAnnotation(RpcMethodName.class));
         if (annotation == null) {
             return "";
         }

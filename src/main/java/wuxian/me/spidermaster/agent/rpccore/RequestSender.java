@@ -78,7 +78,6 @@ public class RequestSender {
         requestQueue.add(request);
     }
 
-    //运行在"ConnectionThread..." --> Fixme:进行优化
     public void onRpcResponse(RpcResponse response) {
         if (response == null || response.requestId == null || response.requestId.length() == 0) {
             return;

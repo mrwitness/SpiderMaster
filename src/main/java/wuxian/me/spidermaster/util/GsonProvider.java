@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.agent.biz;
+package wuxian.me.spidermaster.util;
 
 import com.google.gson.Gson;
 

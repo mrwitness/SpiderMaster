@@ -69,6 +69,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
                 obj = SerializationUtil.deserialize(data, clazz);
 
                 if (obj != null) {
+                    success = true;
                     break;
                 }
             } catch (IllegalStateException e) {

@@ -4,11 +4,12 @@ import com.google.gson.reflect.TypeToken;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.SpiderFeature;
-import wuxian.me.spidermaster.agent.biz.GsonProvider;
+import wuxian.me.spidermaster.util.GsonProvider;
 import wuxian.me.spidermaster.master.agentcontroll.Agent;
 import wuxian.me.spidermaster.master.agentcontroll.AgentRecorder;
 import wuxian.me.spidermaster.master.agentcontroll.Spider;
 import wuxian.me.spidermaster.master.agentcontroll.StatusEnum;
+import wuxian.me.spidermaster.rpc.RpcRetCode;
 import wuxian.me.spidermaster.util.RpcMethodName;
 import wuxian.me.spidermaster.rpc.RpcRequest;
 
@@ -18,16 +19,12 @@ import java.util.List;
 /**
  * Created by wuxian on 18/5/2017.
  * <p>
- * Todo:
  */
 
 @RpcMethodName(methodName = "register")
 public class AgentRegisterHandler extends BaseBizHandler {
 
-    //Fixme:这个接口的返回值设计有点问题
-    //1 错误的时候怎么给出错误码
-    //2 需要有返回值的时候怎么给出response的填充值
-    public void handleRequest(RpcRequest request, SocketChannel channel) {
+    public Object handleRequest(RpcRequest request, SocketChannel channel) throws BizErrorExcepiton {
 
         LogManager.info("receive register rpc");
         LogManager.info("current thread: " + Thread.currentThread());
@@ -53,5 +50,6 @@ public class AgentRegisterHandler extends BaseBizHandler {
         agent.setSpiderList(spiderList);
         AgentRecorder.recordAgent(agent);
 
+        return RpcRetCode.SUCCESS.ordinal();
     }
 }

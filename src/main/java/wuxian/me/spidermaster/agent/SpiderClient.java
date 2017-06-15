@@ -28,7 +28,6 @@ public class SpiderClient implements IClient {
     private RequestSender sender = new RequestSender(this);
 
     private HeartbeatRequestProducer heartbeatProducer = new HeartbeatRequestProducer();
-    //private RegisterRequestProducer registerProducer = new RegisterRequestProducer();
 
     private ReportStatusRequestProducer reportStatusProducer = new ReportStatusRequestProducer();
 
@@ -52,7 +51,6 @@ public class SpiderClient implements IClient {
                 connected = true;
 
                 LogManager.info("connect success,channel "+channel);
-                //sender.init();
             }
 
             public void onFail() {
@@ -79,7 +77,7 @@ public class SpiderClient implements IClient {
 
     }
 
-    //运行在"ConnectionThread"线程 --> 业务处理时间过长会阻塞io线程
+    //运行在Nio业务线程 --> 业务处理时间过长会阻塞io线程
     public void onMessage(RpcRequest request) {
         LogManager.info("onMessage: " + Thread.currentThread().getName());
 
@@ -94,14 +92,13 @@ public class SpiderClient implements IClient {
     }
 
     //Todo:根据reponse.requestId找到IRpcCallback
-    //这个response应该运行在@"ConnectionThread"
     public void onRpcResponse(RpcResponse response) {
 
+        LogManager.info("SpiderClient.onRpcResponse response: " + response.toString());
+        LogManager.info("currentThread: " + Thread.currentThread().getName());
 
     }
 
-    //内部一定是将这个任务(RpcRequest)丢到子线程去发这个请求
-    //注意这里的callback在子线程执行
     public void asyncSendMessage(RpcRequest request, IRpcCallback callback) {
         sender.put(request, callback);
     }
@@ -112,6 +109,7 @@ public class SpiderClient implements IClient {
 
     private static Map<RpcRequest, OnRpcRequest> requestMap = new HashMap<RpcRequest, OnRpcRequest>();
 
+    //Todo:用于接受master的指令 目前并无相关需求
     //业务层只需实现OnRpcRequest接口并注册即可
     public static void registerMessageNotify(RpcRequest request, OnRpcRequest onRpcRequest) {
         if (request == null || onRpcRequest == null) {
@@ -121,7 +119,6 @@ public class SpiderClient implements IClient {
         if (requestMap.containsKey(request)) {
             return;
         }
-
         requestMap.put(request, onRpcRequest);
     }
 

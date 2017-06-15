@@ -53,6 +53,15 @@
             <version>4.2.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>wuxian.me</groupId>
+            <artifactId>spidercommon</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/SpiderCommon.jar</systemPath>
+        </dependency>
+
+
     </dependencies>
 
     <build>

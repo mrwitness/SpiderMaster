@@ -45,7 +45,7 @@ public class SpiderConnector implements Runnable {
     }
 
     public void connectTo(String host, int port) {
-        EventLoopGroup group = new NioEventLoopGroup();  //应该在是当前线程 也就是"ConnectionThread"
+        EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
 
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10 * 1000);

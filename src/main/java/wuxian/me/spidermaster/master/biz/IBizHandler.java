@@ -8,7 +8,7 @@ import wuxian.me.spidermaster.rpc.RpcRequest;
  */
 public interface IBizHandler {
 
-    void handleRequest(RpcRequest request, SocketChannel channel);
+    Object handleRequest(RpcRequest request, SocketChannel channel) throws BizErrorExcepiton;
 
     String getMethodName();
 }

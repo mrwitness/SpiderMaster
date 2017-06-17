@@ -8,6 +8,7 @@ import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.agent.biz.RegisterRequestProducer;
 import wuxian.me.spidermaster.rpc.IRpcCallback;
 import wuxian.me.spidermaster.rpc.RpcRequest;
+import wuxian.me.spidermaster.rpc.RpcResponse;
 import wuxian.me.spidermaster.util.SpiderConfig;
 import wuxian.me.spidermaster.util.exception.IpPortNotValidException;
 
@@ -81,8 +82,9 @@ public class SpiderAgent {
 
                     }
 
-                    public void onResponseSuccess() {
+                    public void onResponseSuccess(RpcResponse response) {
                         LogManager.info("register rpc success");
+                        onRegisterSuccess();
                     }
 
                     public void onResponseFail() {
@@ -92,8 +94,12 @@ public class SpiderAgent {
 
     }
 
+    private void onRegisterSuccess() {
+        ;
+    }
+
     //Todo:
-    public void reportStatusToMaster() {
+    public void reportAgentStatus() {
         ;
     }
 }

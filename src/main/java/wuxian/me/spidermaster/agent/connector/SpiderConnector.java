@@ -93,12 +93,14 @@ public class SpiderConnector implements Runnable {
         try {
             //https://netty.io/4.0/api/io/netty/channel/Channel.html
             //Returns the ChannelFuture which will be notified when this channel is closed.
+            future.channel().closeFuture().sync();  //Fixme: 若远程服务器"主动"关闭连接 会走到下面
 
-            future.channel().closeFuture().sync();
-
+            LogManager.info("SpiderConnector.close");
         } catch (InterruptedException e) {
 
+            LogManager.error("SpiderConnector.exception");
         } finally {
+
             group.shutdownGracefully();
         }
     }

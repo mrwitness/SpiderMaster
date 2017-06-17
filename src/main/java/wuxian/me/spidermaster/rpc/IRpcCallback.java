@@ -7,7 +7,7 @@ public interface IRpcCallback {
 
     void onSent();
 
-    void onResponseSuccess();
+    void onResponseSuccess(RpcResponse response);
 
     void onResponseFail();
 

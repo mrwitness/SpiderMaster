@@ -10,6 +10,9 @@ import wuxian.me.spidermaster.rpc.RpcResponse;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by wuxian on 10/6/2017.
@@ -27,6 +30,12 @@ public class RequestSender {
         this.client = client;
     }
 
+    public void onConncet() {
+        synchronized (dispatchThread) {
+            dispatchThread.notifyAll();
+        }
+    }
+
     public void init() {
         dispatchThread = new Thread() {
             @Override
@@ -35,24 +44,25 @@ public class RequestSender {
                     while (true) {
                         LogManager.info("dispatchThread.run");
 
-                        if (client != null && client.channel() != null && !requestQueue.isEmpty()) {
-                            RpcRequest rpcRequest = requestQueue.poll();
-
-                            LogManager.info("before send rpc request... "+rpcRequest.toString());
-
-                            try {
-                                client.channel().writeAndFlush(rpcRequest).sync();
-                            } catch (InterruptedException e) {
-                                ;
+                        boolean canPoll = (client != null && client.channel() != null && !requestQueue.isEmpty());
+                        if (!canPoll) {
+                            synchronized (this) {
+                                try {
+                                    wait();
+                                } catch (InterruptedException e) {
+                                    ;
+                                }
                             }
                         }
 
+                        RpcRequest rpcRequest = requestQueue.poll();
+                        LogManager.info("before send rpc request... " + rpcRequest.toString());
                         try {
-                            LogManager.info("requestQueue.size: "+requestQueue.size());
-                            LogManager.info("request queue empty,sleep...");
-                            sleep(2000);
+                            LogManager.info("before flush");
+                            client.channel().writeAndFlush(rpcRequest).await();
+                            LogManager.info("finish flush");
                         } catch (InterruptedException e) {
-
+                            LogManager.error("sender InterruptedExcepiton");
                         }
                     }
                 }
@@ -65,17 +75,25 @@ public class RequestSender {
 
 
     public void put(RpcRequest request, IRpcCallback onRpcReques) {
+
+        LogManager.info("RequestSender.put");
         if (request == null) {
             return;
         }
-        /*
+
         if (requestMap.containsKey(request.requestId)) {
             return;
         }
-        */
-
         requestMap.put(request.requestId, onRpcReques);
+
+        boolean notify = (client != null && client.channel() != null && requestQueue.isEmpty());
+
         requestQueue.add(request);
+        if (notify) {
+            synchronized (dispatchThread) {
+                dispatchThread.notifyAll();
+            }
+        }
     }
 
     public void onRpcResponse(RpcResponse response) {
@@ -87,7 +105,7 @@ public class RequestSender {
             return;
         }
 
-        //Todo
-        requestMap.get(response.requestId).onResponseSuccess();
+
+        requestMap.get(response.requestId).onResponseSuccess(response);
     }
 }

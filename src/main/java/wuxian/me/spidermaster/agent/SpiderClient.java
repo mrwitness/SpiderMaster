@@ -3,12 +3,12 @@ package wuxian.me.spidermaster.agent;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.agent.biz.HeartbeatRequestProducer;
-import wuxian.me.spidermaster.agent.biz.RegisterRequestProducer;
 import wuxian.me.spidermaster.agent.biz.ReportStatusRequestProducer;
 import wuxian.me.spidermaster.agent.connector.IConnectCallback;
 import wuxian.me.spidermaster.agent.connector.SpiderConnector;
 import wuxian.me.spidermaster.agent.rpccore.OnRpcRequest;
 import wuxian.me.spidermaster.agent.rpccore.RequestSender;
+import wuxian.me.spidermaster.rpc.DefaultCallback;
 import wuxian.me.spidermaster.rpc.IRpcCallback;
 import wuxian.me.spidermaster.rpc.RpcRequest;
 import wuxian.me.spidermaster.rpc.RpcResponse;
@@ -26,8 +26,7 @@ public class SpiderClient implements IClient {
     private boolean connected = false;
     private SocketChannel channel;
     private RequestSender sender = new RequestSender(this);
-
-    private HeartbeatRequestProducer heartbeatProducer = new HeartbeatRequestProducer();
+    private Thread heartbeatThread;
 
     private ReportStatusRequestProducer reportStatusProducer = new ReportStatusRequestProducer();
 
@@ -50,7 +49,8 @@ public class SpiderClient implements IClient {
                 SpiderClient.this.channel = channel;  //save channel
                 connected = true;
 
-                LogManager.info("connect success,channel "+channel);
+                sender.onConncet();
+                LogManager.info("connect success,channel " + channel);
             }
 
             public void onFail() {
@@ -91,12 +91,41 @@ public class SpiderClient implements IClient {
         requestMap.get(request).onRpcRequest(request);
     }
 
-    //Todo:根据reponse.requestId找到IRpcCallback
+    private void startHeartbeatThread() {
+
+        heartbeatThread = new Thread() {
+            @Override
+            public void run() {
+
+                while (true) {
+                    if (sender != null) {
+                        sender.put(new HeartbeatRequestProducer().produce()
+                                , DefaultCallback.ins());
+                    }
+
+                    try {
+                        sleep(15 * 1000);
+                    } catch (InterruptedException e) {
+                        ;
+                    }
+                }
+            }
+        };
+
+        heartbeatThread.setName("heartbeatThread");
+        heartbeatThread.start();
+    }
+
     public void onRpcResponse(RpcResponse response) {
+
+        startHeartbeatThread();
 
         LogManager.info("SpiderClient.onRpcResponse response: " + response.toString());
         LogManager.info("currentThread: " + Thread.currentThread().getName());
 
+        if (sender != null) {
+            sender.onRpcResponse(response);
+        }
     }
 
     public void asyncSendMessage(RpcRequest request, IRpcCallback callback) {

@@ -3,6 +3,7 @@ package wuxian.me.spidermaster.agent.rpccore;
 import com.sun.istack.internal.Nullable;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
+import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.agent.IClient;
 import wuxian.me.spidermaster.rpc.RpcResponse;
 
@@ -27,4 +28,10 @@ public class AgentRpcResponseHandler extends SimpleChannelInboundHandler<RpcResp
         client.onRpcResponse(rpcResponse);
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+
+        LogManager.error("AgetRpcResponseHandler.exceptionCaught");
+    }
 }

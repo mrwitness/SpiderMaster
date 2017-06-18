@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by wuxian on 11/6/2017.
  * <p>
- * master能够处理的业务必须在这里注册
+ * master能够处理的业务必须在这里注册,否则无法识别
  */
 public class BizHandlerRegistration {
 

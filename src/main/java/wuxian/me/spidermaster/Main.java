@@ -7,6 +7,9 @@ import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
 import wuxian.me.spidermaster.agent.SpiderAgent;
 import wuxian.me.spidermaster.master.SpiderMaster;
+import wuxian.me.spidermaster.master.agentcontroll.StatusEnum;
+import wuxian.me.spidermaster.rpc.IRpcCallback;
+import wuxian.me.spidermaster.rpc.RpcResponse;
 import wuxian.me.spidermaster.util.SpiderConfig;
 
 import java.util.ArrayList;
@@ -46,7 +49,7 @@ public class Main {
 
         SpiderAgent.init();
 
-        SpiderAgent agent = new SpiderAgent();
+        final SpiderAgent agent = new SpiderAgent();
         agent.start();
 
         List<Class<?>> classList = new ArrayList<Class<?>>(1);
@@ -57,7 +60,22 @@ public class Main {
         node.baseUrl="hello_world";
         httpUrlNodeList.add(node);
 
-        agent.registerToMaster(classList,httpUrlNodeList);
+        agent.registerToMaster(classList, httpUrlNodeList, new IRpcCallback() {
+            @Override
+            public void onSent() {
+
+            }
+
+            @Override
+            public void onResponseSuccess(RpcResponse response) {
+                agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
+            }
+
+            @Override
+            public void onResponseFail() {
+
+            }
+        });
     }
 
     private void startMaster() {

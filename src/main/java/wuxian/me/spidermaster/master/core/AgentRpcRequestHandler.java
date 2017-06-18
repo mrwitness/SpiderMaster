@@ -1,6 +1,5 @@
 package wuxian.me.spidermaster.master.core;
 
-import com.sun.istack.internal.NotNull;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
@@ -42,7 +41,7 @@ public class AgentRpcRequestHandler extends SimpleChannelInboundHandler<RpcReque
             return;
         }
 
-        LogManager.info("AgentRpcRequestHandler channelRead0");
+        LogManager.info("AgentRpcRequestHandler channelRead0 requestId:" + request.requestId);
         IBizHandler handler = BizHandlerRegistration.findHandlerBy(request.methodName);
         if (handler != null) {
             LogManager.info("getRpcRequest,rpcName: " + request.methodName + " handlerClass: " + handler.getClass());
@@ -57,7 +56,7 @@ public class AgentRpcRequestHandler extends SimpleChannelInboundHandler<RpcReque
             }
 
         } else {
-            response.retCode = RpcRetCode.FAIL.ordinal(); //Todo:加一些错误返回码
+            response.retCode = RpcRetCode.FAIL.ordinal(); //Todo:设计一些错误返回码
         }
 
         channelHandlerContext.writeAndFlush(response);

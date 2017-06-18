@@ -8,6 +8,7 @@ import wuxian.me.spidermaster.util.RpcMethodName;
 public abstract class BaseRequestProducer implements IRequestProducer {
 
     protected final String getRpcBizName() {
+
         RpcMethodName annotation = (getClass().getAnnotation(RpcMethodName.class));
         if (annotation == null) {
             return "";
@@ -17,6 +18,7 @@ public abstract class BaseRequestProducer implements IRequestProducer {
         if (method == null) {
             return "";
         }
+
         return method;
     }
 }

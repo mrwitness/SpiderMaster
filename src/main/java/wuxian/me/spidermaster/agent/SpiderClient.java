@@ -18,7 +18,6 @@ import java.util.Map;
 
 /**
  * Created by wuxian on 26/5/2017.
- * <p>
  */
 public class SpiderClient implements IClient {
 
@@ -27,8 +26,6 @@ public class SpiderClient implements IClient {
     private SocketChannel channel;
     private RequestSender sender = new RequestSender(this);
     private Thread heartbeatThread;
-
-    private ReportStatusRequestProducer reportStatusProducer = new ReportStatusRequestProducer();
 
     public void init() {
         sender.init();
@@ -61,6 +58,10 @@ public class SpiderClient implements IClient {
             public void onException() {
 
             }
+
+            public void onClosed() {
+
+            }
         });
         connectThread = new Thread(connector);
         connectThread.setName("ConnectionThread");
@@ -77,10 +78,8 @@ public class SpiderClient implements IClient {
 
     }
 
-    //运行在Nio业务线程 --> 业务处理时间过长会阻塞io线程
     public void onMessage(RpcRequest request) {
         LogManager.info("onMessage: " + Thread.currentThread().getName());
-
         if (request == null) {
             return;
         }

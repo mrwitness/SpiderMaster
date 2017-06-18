@@ -22,9 +22,10 @@ import wuxian.me.spidermaster.rpc.RpcResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by wuxian on 9/6/2017.
+ *
+ * Todo:断线重连的api设计？
  */
 public class SpiderConnector implements Runnable {
 
@@ -42,6 +43,8 @@ public class SpiderConnector implements Runnable {
 
         this.client = client;
         this.connectCallback = callback;
+
+
     }
 
     public void connectTo(String host, int port) {
@@ -68,7 +71,7 @@ public class SpiderConnector implements Runnable {
                 })
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
-        ChannelFuture future = bootstrap.connect(host, port);//.sync();
+        ChannelFuture future = bootstrap.connect(host, port);
         future.awaitUninterruptibly();
 
         if (future.isCancelled()) {
@@ -93,14 +96,16 @@ public class SpiderConnector implements Runnable {
         try {
             //https://netty.io/4.0/api/io/netty/channel/Channel.html
             //Returns the ChannelFuture which will be notified when this channel is closed.
-            future.channel().closeFuture().sync();  //Fixme: 若远程服务器"主动"关闭连接 会走到下面
+            future.channel().closeFuture().sync();
 
+            if (connectCallback != null) {
+                connectCallback.onClosed();
+            }
             LogManager.info("SpiderConnector.close");
         } catch (InterruptedException e) {
 
             LogManager.error("SpiderConnector.exception");
         } finally {
-
             group.shutdownGracefully();
         }
     }

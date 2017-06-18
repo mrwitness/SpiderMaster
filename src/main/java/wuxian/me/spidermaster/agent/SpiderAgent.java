@@ -6,6 +6,9 @@ import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.agent.biz.RegisterRequestProducer;
+import wuxian.me.spidermaster.agent.biz.ReportStatusRequestProducer;
+import wuxian.me.spidermaster.master.agentcontroll.StatusEnum;
+import wuxian.me.spidermaster.rpc.DefaultCallback;
 import wuxian.me.spidermaster.rpc.IRpcCallback;
 import wuxian.me.spidermaster.rpc.RpcRequest;
 import wuxian.me.spidermaster.rpc.RpcResponse;
@@ -52,7 +55,7 @@ public class SpiderAgent {
         spiderClient.asyncConnect(serverIp, serverPort);
     }
 
-    public void registerToMaster(@Nullable List<Class<?>> classList, @Nullable List<HttpUrlNode> nodeList) {
+    public void registerToMaster(@Nullable List<Class<?>> classList, @Nullable List<HttpUrlNode> nodeList, final IRpcCallback callback) {
         if (classList == null) {
 
             classList = new ArrayList<Class<?>>();
@@ -79,27 +82,38 @@ public class SpiderAgent {
         spiderClient.asyncSendMessage(rpcRequest
                 , new IRpcCallback() {
                     public void onSent() {
+                        if (callback != null) {
+                            callback.onSent();
+                        }
 
                     }
 
                     public void onResponseSuccess(RpcResponse response) {
                         LogManager.info("register rpc success");
-                        onRegisterSuccess();
+
+                        if (callback != null) {
+                            callback.onResponseSuccess(response);
+                        }
                     }
 
                     public void onResponseFail() {
                         LogManager.info("register rpc fail");
+
+                        if (callback != null) {
+                            callback.onResponseFail();
+                        }
                     }
                 });
-
     }
 
-    private void onRegisterSuccess() {
-        ;
+    public void registerToMaster(@Nullable List<Class<?>> classList, @Nullable List<HttpUrlNode> nodeList) {
+        registerToMaster(classList, nodeList, null);
     }
 
-    //Todo:
-    public void reportAgentStatus() {
-        ;
+
+    public void reportAgentStatus(StatusEnum statusEnum) {
+        RpcRequest rpcRequest = new ReportStatusRequestProducer(statusEnum).produce();
+
+        spiderClient.asyncSendMessage(rpcRequest, DefaultCallback.ins());
     }
 }

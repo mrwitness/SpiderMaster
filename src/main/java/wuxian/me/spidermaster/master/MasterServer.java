@@ -10,6 +10,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
+import wuxian.me.spidermaster.master.agentcontroll.AgentRecorder;
 import wuxian.me.spidermaster.master.agentcontroll.ConnectionManager;
 import wuxian.me.spidermaster.master.core.AgentRpcRequestHandler;
 import wuxian.me.spidermaster.rpc.RpcDecoder;
@@ -22,6 +23,7 @@ import java.util.List;
 
 /**
  * Created by wuxian on 18/5/2017.
+ * Todo:断线重连api设计
  */
 public class MasterServer {
 
@@ -60,7 +62,6 @@ public class MasterServer {
                             classList.add(RpcRequest.class);
 
                             socketChannel.pipeline()
-                                    //.addLast(new DummyInboundHandler())
                                     .addLast(new RpcDecoder(classList))
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AgentRpcRequestHandler(socketChannel))
@@ -74,6 +75,8 @@ public class MasterServer {
             LogManager.info("Master Server begin to bind port: "+port);
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
+
+            AgentRecorder.startPrintAgentThread();
 
             future.channel().read();
 

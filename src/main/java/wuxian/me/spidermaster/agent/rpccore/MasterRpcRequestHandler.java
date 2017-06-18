@@ -6,13 +6,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import wuxian.me.spidermaster.agent.IClient;
 import wuxian.me.spidermaster.rpc.RpcRequest;
 import wuxian.me.spidermaster.rpc.RpcResponse;
+import wuxian.me.spidermaster.rpc.RpcRetCode;
 
 import java.util.Map;
 
 /**
  * Created by wuxian on 9/6/2017.
  * <p>
- * 这里的agent是被命令的一方 因此应该立马返回一个标准回应
+ * 命令响应模式
  */
 public class MasterRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
@@ -23,9 +24,16 @@ public class MasterRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequ
         this.client = client;
     }
 
-    //Todo:是否需要返回一个默认的response
+    //返回一个默认的response
     protected void channelRead0(ChannelHandlerContext channelHandlerContext
             , RpcRequest request) throws Exception {
-        this.client.onMessage(request);  //
+        this.client.onMessage(request);  //Todo:后续扩展业务在这里处理
+
+        RpcResponse response = new RpcResponse();
+        response.requestId = request.requestId;
+        response.retCode = RpcRetCode.SUCCESS.ordinal();
+
+        channelHandlerContext.writeAndFlush(response);
+
     }
 }

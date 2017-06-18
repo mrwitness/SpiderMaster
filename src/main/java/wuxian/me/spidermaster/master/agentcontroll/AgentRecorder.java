@@ -1,35 +1,82 @@
 package wuxian.me.spidermaster.master.agentcontroll;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import io.netty.channel.socket.SocketChannel;
+import wuxian.me.spidercommon.log.LogManager;
+
+import java.util.*;
 
 /**
  * Created by wuxian on 18/5/2017.
- * <p>
- * 记录所有agent
  */
 public class AgentRecorder {
 
+    //Todo: 这里的set没什么卵用 后面可以去掉
     private static Set<Agent> agentSet = Collections.synchronizedSet(new HashSet<Agent>());
+
+    private static Map<SocketChannel, Agent> map = new HashMap<SocketChannel, Agent>();
 
     private AgentRecorder() {
     }
 
-    public static void recordAgent(Agent agent) {
 
+    public static void startPrintAgentThread() {
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+
+                while (true) {
+                    try {
+                        sleep(10000);
+                    } catch (InterruptedException e) {
+                        ;
+                    }
+
+                    Set<Agent> agents = new HashSet<Agent>(agentSet);
+                    for (Agent agent : agents) {
+                        LogManager.info(agent.printAgentString());
+                    }
+                }
+
+            }
+        };
+
+        thread.setName("printAgentThread");
+        thread.start();
+    }
+
+    public static void recordAgent(Agent agent) {
         if(agent == null) {
             return;
         }
-
         if(!agentSet.contains(agent)) {
             synchronized (agentSet) {
                 if(!agentSet.contains(agent)) {
                     agentSet.add(agent);
                 }
+                if (agent.getChannel() != null) {
+                    map.put(agent.getChannel(), agent);
+                }
             }
+        } else {  //这种情况一般是被reportStatus调用
+            synchronized (agentSet) {
+                agentSet.remove(agent);
+                agentSet.add(agent);
+                map.put(agent.getChannel(), agent);
+            }
+
         }
     }
 
+    public static Agent findByChannel(SocketChannel socketChannel) {
+        if (socketChannel == null) {
+            return null;
+        }
 
+        if (!map.containsKey(socketChannel)) {
+            return null;
+        }
+
+        return map.get(socketChannel);
+    }
 }

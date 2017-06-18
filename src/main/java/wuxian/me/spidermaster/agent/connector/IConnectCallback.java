@@ -12,4 +12,6 @@ public interface IConnectCallback {
     void onFail();
 
     void onException();
+
+    void onClosed();
 }

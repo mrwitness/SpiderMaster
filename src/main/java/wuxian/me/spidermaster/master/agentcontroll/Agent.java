@@ -8,11 +8,6 @@ import java.util.List;
 
 /**
  * Created by wuxian on 26/5/2017.
- * <p>
- *
- * 事实上在停止一个agent的时候,不一定要停止这个agent上所有的spider。因为Spider可能爬的是不同的网站。
- * 在这里进行简单处理。
- *
  */
 public class Agent {
 
@@ -22,6 +17,7 @@ public class Agent {
     //当前agent的状态
     private StatusEnum currentState = null;
 
+    //Fixme:目前并没有给赋值
     //当前使用的代理
     private Proxy currentProxy = null;
 
@@ -45,6 +41,8 @@ public class Agent {
 
     public void setCurrentState(StatusEnum currentState) {
         this.currentState = currentState;
+
+        this.statusList.add(currentState);
     }
 
     public Proxy getCurrentProxy() {
@@ -69,5 +67,28 @@ public class Agent {
 
     public void setSpiderList(List<Spider> spiderList) {
         this.spiderList = spiderList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Agent agent = (Agent) o;
+
+        return channel != null ? channel.equals(agent.channel) : agent.channel == null;
+
+    }
+
+    //Fixme:若断线重连了 那么目前的方案就认为是另一个agent？？？
+    //Todo:解决方案是可以给它赋予一个agent id
+    @Override
+    public int hashCode() {
+        return channel != null ? channel.hashCode() : 0;
+    }
+
+    //Todo:把agent的状态打印出来
+    public String printAgentString() {
+        return "agent.printAgentString";
     }
 }

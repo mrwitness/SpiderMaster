@@ -18,7 +18,6 @@ import java.util.List;
 
 /**
  * Created by wuxian on 18/5/2017.
- * <p>
  */
 
 @RpcMethodName(methodName = "register")

@@ -8,8 +8,6 @@ import wuxian.me.spidermaster.rpc.RpcRequest;
 import wuxian.me.spidermaster.rpc.RpcResponse;
 import wuxian.me.spidermaster.rpc.RpcRetCode;
 
-import java.util.Map;
-
 /**
  * Created by wuxian on 9/6/2017.
  * <p>
@@ -27,7 +25,7 @@ public class MasterRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequ
     //返回一个默认的response
     protected void channelRead0(ChannelHandlerContext channelHandlerContext
             , RpcRequest request) throws Exception {
-        this.client.onMessage(request);  //Todo:后续扩展业务在这里处理
+        this.client.onReceiveMessage(request);  //Todo:后续扩展业务在这里处理
 
         RpcResponse response = new RpcResponse();
         response.requestId = request.requestId;

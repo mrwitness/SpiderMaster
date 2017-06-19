@@ -1,31 +1,14 @@
 package wuxian.me.spidermaster.agent.connector;
 
-import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
-import wuxian.me.spidermaster.agent.rpccore.AgentRpcResponseHandler;
-import wuxian.me.spidermaster.agent.IClient;
-import wuxian.me.spidermaster.agent.rpccore.MasterRpcRequestHandler;
-import wuxian.me.spidermaster.rpc.RpcDecoder;
-import wuxian.me.spidermaster.rpc.RpcEncoder;
-import wuxian.me.spidermaster.rpc.RpcRequest;
-import wuxian.me.spidermaster.rpc.RpcResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import wuxian.me.spidermaster.agent.rpccore.NioEnv;
 
 /**
  * Created by wuxian on 9/6/2017.
- *
- * Todo:断线重连的api设计？
  */
 public class SpiderConnector implements Runnable {
 
@@ -35,41 +18,20 @@ public class SpiderConnector implements Runnable {
 
     private IConnectCallback connectCallback;
 
-    private IClient client;
-
-    public SpiderConnector(String host, int port, @NotNull IClient client, @Nullable IConnectCallback callback) {
+    public SpiderConnector(String host, int port, @Nullable IConnectCallback callback) {
         this.host = host;
         this.port = port;
-
-        this.client = client;
         this.connectCallback = callback;
-
-
     }
 
     public void connectTo(String host, int port) {
-        EventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap bootstrap = new Bootstrap();
 
-        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10 * 1000);
-        bootstrap.group(group).channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel channel) throws Exception {
-                        socketChannel = channel;
-
-                        List<Class<?>> classList = new ArrayList<Class<?>>();
-                        classList.add(RpcResponse.class);
-                        classList.add(RpcRequest.class);
-                        channel.pipeline()
-                                .addLast(new RpcEncoder(classList))
-                                .addLast(new RpcDecoder(classList))
-                                .addLast(new AgentRpcResponseHandler(client))
-                                .addLast(new MasterRpcRequestHandler(client))
-                        ;
-                    }
-                })
-                .option(ChannelOption.SO_KEEPALIVE, true);
+        Bootstrap bootstrap = NioEnv.getAgentBootstrap(new NioEnv.OnChannelInit() {
+            @Override
+            public void onChannelInit(SocketChannel channel) {
+                SpiderConnector.this.socketChannel = channel;
+            }
+        });
 
         ChannelFuture future = bootstrap.connect(host, port);
         future.awaitUninterruptibly();
@@ -93,21 +55,12 @@ public class SpiderConnector implements Runnable {
 
         connectCallback.onSuccess(socketChannel);
 
-        try {
-            //https://netty.io/4.0/api/io/netty/channel/Channel.html
-            //Returns the ChannelFuture which will be notified when this channel is closed.
-            future.channel().closeFuture().sync();
+        socketChannel.closeFuture().syncUninterruptibly();
 
-            if (connectCallback != null) {
-                connectCallback.onClosed();
-            }
-            LogManager.info("SpiderConnector.close");
-        } catch (InterruptedException e) {
-
-            LogManager.error("SpiderConnector.exception");
-        } finally {
-            group.shutdownGracefully();
+        if (connectCallback != null) {
+            connectCallback.onClosed();
         }
+        LogManager.info("SpiderConnector.close");
     }
 
     public void run() {

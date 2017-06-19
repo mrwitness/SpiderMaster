@@ -19,9 +19,9 @@ public interface IClient {
     boolean isConnected();
 
     //主动调用disconnect
-    void disconnectFromServer();
+    void doDisconnectFromServer();
 
-    void onMessage(RpcRequest request);
+    void onReceiveMessage(RpcRequest request);
 
     void onRpcResponse(RpcResponse response);
 

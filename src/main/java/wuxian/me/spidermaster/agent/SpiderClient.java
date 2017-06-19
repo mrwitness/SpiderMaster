@@ -3,9 +3,10 @@ package wuxian.me.spidermaster.agent;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.agent.biz.HeartbeatRequestProducer;
-import wuxian.me.spidermaster.agent.biz.ReportStatusRequestProducer;
 import wuxian.me.spidermaster.agent.connector.IConnectCallback;
 import wuxian.me.spidermaster.agent.connector.SpiderConnector;
+import wuxian.me.spidermaster.agent.rpccore.AgentRpcResponseHandler;
+import wuxian.me.spidermaster.agent.rpccore.MasterRpcRequestHandler;
 import wuxian.me.spidermaster.agent.rpccore.OnRpcRequest;
 import wuxian.me.spidermaster.agent.rpccore.RequestSender;
 import wuxian.me.spidermaster.rpc.DefaultCallback;
@@ -41,12 +42,16 @@ public class SpiderClient implements IClient {
         }
 
         SpiderConnector connector = new SpiderConnector(
-                serverIp, serverPort, this, new IConnectCallback() {
+                serverIp, serverPort, new IConnectCallback() {
             public void onSuccess(SocketChannel channel) {
                 SpiderClient.this.channel = channel;  //save channel
+
+                SpiderClient.this.channel.pipeline()
+                        .addLast(new AgentRpcResponseHandler(SpiderClient.this))
+                        .addLast(new MasterRpcRequestHandler(SpiderClient.this));
                 connected = true;
 
-                sender.onConncet();
+                sender.onConncetSuccess();
                 LogManager.info("connect success,channel " + channel);
             }
 
@@ -60,7 +65,9 @@ public class SpiderClient implements IClient {
             }
 
             public void onClosed() {
+                connected = false;
 
+                asyncConnect(serverIp, serverPort);  //断线之后 立刻连接
             }
         });
         connectThread = new Thread(connector);
@@ -74,12 +81,12 @@ public class SpiderClient implements IClient {
     }
 
     //Todo:
-    public void disconnectFromServer() {
+    public void doDisconnectFromServer() {
 
     }
 
-    public void onMessage(RpcRequest request) {
-        LogManager.info("onMessage: " + Thread.currentThread().getName());
+    public void onReceiveMessage(RpcRequest request) {
+        LogManager.info("onReceiveMessage: " + Thread.currentThread().getName());
         if (request == null) {
             return;
         }
@@ -95,7 +102,6 @@ public class SpiderClient implements IClient {
         heartbeatThread = new Thread() {
             @Override
             public void run() {
-
                 while (true) {
                     if (sender != null) {
                         sender.put(new HeartbeatRequestProducer().produce()

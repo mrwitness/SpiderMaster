@@ -7,6 +7,7 @@ import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.agent.biz.RegisterRequestProducer;
 import wuxian.me.spidermaster.agent.biz.ReportStatusRequestProducer;
+import wuxian.me.spidermaster.agent.rpccore.NioEnv;
 import wuxian.me.spidermaster.master.agentcontroll.StatusEnum;
 import wuxian.me.spidermaster.rpc.DefaultCallback;
 import wuxian.me.spidermaster.rpc.IRpcCallback;
@@ -51,6 +52,7 @@ public class SpiderAgent {
     }
 
     public void start() {
+        NioEnv.init();
         spiderClient.init();
         spiderClient.asyncConnect(serverIp, serverPort);
     }

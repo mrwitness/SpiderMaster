@@ -61,9 +61,4 @@ public class AgentRpcRequestHandler extends SimpleChannelInboundHandler<RpcReque
 
         channelHandlerContext.writeAndFlush(response);
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-    }
 }

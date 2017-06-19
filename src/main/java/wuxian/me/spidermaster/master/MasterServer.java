@@ -2,10 +2,7 @@ package wuxian.me.spidermaster.master;
 
 import com.sun.istack.internal.NotNull;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -23,9 +20,8 @@ import java.util.List;
 
 /**
  * Created by wuxian on 18/5/2017.
- * Todo:断线重连api设计
  */
-public class MasterServer {
+public class MasterServer extends ChannelInboundHandlerAdapter {
 
     private boolean started = false;
 
@@ -65,6 +61,7 @@ public class MasterServer {
                                     .addLast(new RpcDecoder(classList))
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AgentRpcRequestHandler(socketChannel))
+                                    .addLast(MasterServer.this)
                             ;
                         }
                     })
@@ -72,7 +69,7 @@ public class MasterServer {
                     .option(ChannelOption.AUTO_READ, false)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            LogManager.info("Master Server begin to bind port: "+port);
+            LogManager.info("Master Server begin to bind port: " + port);
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
 
@@ -90,5 +87,11 @@ public class MasterServer {
             boss.shutdownGracefully();
         }
 
+    }
+
+    //Todo: handle exception
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
     }
 }

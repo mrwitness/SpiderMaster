@@ -30,7 +30,7 @@ public class RequestSender {
         this.client = client;
     }
 
-    public void onConncet() {
+    public void onConncetSuccess() {
         synchronized (dispatchThread) {
             dispatchThread.notifyAll();
         }

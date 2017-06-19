@@ -33,6 +33,9 @@ public class AgentRecorder {
                     }
 
                     Set<Agent> agents = new HashSet<Agent>(agentSet);
+                    if (agents != null && agents.size() != 0) {
+                        LogManager.info("begin to print All Agents");
+                    }
                     for (Agent agent : agents) {
                         LogManager.info(agent.printAgentString());
                     }

@@ -27,6 +27,8 @@ public class SpiderClient implements IClient {
     private SocketChannel channel;
     private RequestSender sender = new RequestSender(this);
     private Thread heartbeatThread;
+    private String serverIp;
+    private int serverPort;
 
     public void init() {
         sender.init();
@@ -37,6 +39,9 @@ public class SpiderClient implements IClient {
     }
 
     public void asyncConnect(final String serverIp, final int serverPort) {
+        this.serverIp = serverIp;
+        this.serverPort = serverPort;
+
         if (connected) {
             return;
         }
@@ -58,16 +63,19 @@ public class SpiderClient implements IClient {
             public void onFail() {
                 LogManager.info("connect fail");
 
+                connected = false;
+                onSocketClosed();
             }
 
             public void onException() {
+                connected = false;
 
             }
 
             public void onClosed() {
                 connected = false;
 
-                asyncConnect(serverIp, serverPort);  //断线之后 立刻连接
+                onSocketClosed();
             }
         });
         connectThread = new Thread(connector);
@@ -80,9 +88,19 @@ public class SpiderClient implements IClient {
         return connected;
     }
 
-    //Todo:
-    public void doDisconnectFromServer() {
+    private void onSocketClosed() {
+        connected = false;
+        if (heartbeatThread != null) {
+            heartbeatThread.interrupt();
+        }
+        asyncConnect(serverIp, serverPort);  //断线之后 立刻连接
+    }
 
+    //Todo:什么情况下需要客户端主动调用关闭连接？
+    public void doDisconnectFromServer() {
+        channel.close().syncUninterruptibly();
+
+        onSocketClosed();
     }
 
     public void onReceiveMessage(RpcRequest request) {
@@ -102,16 +120,20 @@ public class SpiderClient implements IClient {
         heartbeatThread = new Thread() {
             @Override
             public void run() {
+
+                if (isInterrupted()) {
+                    return;
+                }
+
                 while (true) {
                     if (sender != null) {
                         sender.put(new HeartbeatRequestProducer().produce()
                                 , DefaultCallback.ins());
                     }
-
                     try {
                         sleep(15 * 1000);
                     } catch (InterruptedException e) {
-                        ;
+                        break;
                     }
                 }
             }
@@ -123,14 +145,26 @@ public class SpiderClient implements IClient {
 
     public void onRpcResponse(RpcResponse response) {
 
-        startHeartbeatThread();
-
         LogManager.info("SpiderClient.onRpcResponse response: " + response.toString());
         LogManager.info("currentThread: " + Thread.currentThread().getName());
 
         if (sender != null) {
             sender.onRpcResponse(response);
+
+            RpcRequest req = sender.getRequestBy(response.requestId);
+            if (req != null) {
+                if (req.methodName.equals(registerRpc)) { //只有注册成功了才发起心跳
+                    startHeartbeatThread();
+                }
+            }
         }
+    }
+
+    private final String registerRpc = new HeartbeatRequestProducer().produce().methodName;
+
+    //Todo
+    public void asyncSendMessage(RpcRequest request, long timeout, IRpcCallback callback) {
+        ;
     }
 
     public void asyncSendMessage(RpcRequest request, IRpcCallback callback) {

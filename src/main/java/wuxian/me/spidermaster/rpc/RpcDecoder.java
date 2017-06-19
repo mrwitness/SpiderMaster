@@ -79,7 +79,6 @@ public class RpcDecoder extends ByteToMessageDecoder {
             }
         }
 
-
         if (success && obj != null) {
             out.add(obj);
         }

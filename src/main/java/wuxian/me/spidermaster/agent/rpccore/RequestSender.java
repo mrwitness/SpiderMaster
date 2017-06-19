@@ -10,24 +10,32 @@ import wuxian.me.spidermaster.rpc.RpcResponse;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by wuxian on 10/6/2017.
  */
 public class RequestSender {
 
-    private Map<String, IRpcCallback> requestMap = new ConcurrentHashMap<String, IRpcCallback>();
+    private Map<String, IRpcCallback> callbackMap = new ConcurrentHashMap<String, IRpcCallback>();
     private Queue<RpcRequest> requestQueue = new LinkedBlockingQueue<RpcRequest>();
+    private Map<String, RpcRequest> requestMap = new ConcurrentHashMap<String, RpcRequest>();
     private IClient client;
+
+    //Todo: implement request timeout
+    private Map<String, Long> waitMap = new HashMap<String, Long>();
 
     private Thread dispatchThread;
 
     public RequestSender(@NotNull IClient client) {
 
         this.client = client;
+    }
+
+    public RpcRequest getRequestBy(String key) {
+        if (key == null || key.length() == 0) {
+            return null;
+        }
+        return requestMap.get(key);
     }
 
     public void onConncetSuccess() {
@@ -88,14 +96,17 @@ public class RequestSender {
             return;
         }
 
-        if (requestMap.containsKey(request.requestId)) {
+        if (callbackMap.containsKey(request.requestId)) {
             return;
         }
-        requestMap.put(request.requestId, onRpcReques);
+
 
         boolean notify = (client != null && client.channel() != null && requestQueue.isEmpty());
 
         requestQueue.add(request);
+        requestMap.put(request.requestId, request);
+        callbackMap.put(request.requestId, onRpcReques);
+
         if (notify) {
             synchronized (dispatchThread) {
                 dispatchThread.notifyAll();
@@ -108,11 +119,11 @@ public class RequestSender {
             return;
         }
 
-        if (!requestMap.containsKey(response.requestId)) {
+        if (!callbackMap.containsKey(response.requestId)) {
             return;
         }
 
 
-        requestMap.get(response.requestId).onResponseSuccess(response);
+        callbackMap.get(response.requestId).onResponseSuccess(response);
     }
 }

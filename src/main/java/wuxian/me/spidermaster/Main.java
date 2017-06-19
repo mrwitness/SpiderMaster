@@ -69,6 +69,8 @@ public class Main {
             @Override
             public void onResponseSuccess(RpcResponse response) {
                 agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
+
+                agent.reportAgentStatus(StatusEnum.BLOCKED);
             }
 
             @Override

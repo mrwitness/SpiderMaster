@@ -87,8 +87,22 @@ public class Agent {
         return channel != null ? channel.hashCode() : 0;
     }
 
-    //Todo:把agent的状态打印出来
     public String printAgentString() {
-        return "agent.printAgentString";
+
+        StringBuilder builder = new StringBuilder("Agent:{");
+        builder.append(" socketChannel: local:" + channel.localAddress().toString() + " remote:" + channel.remoteAddress().toString());
+        builder.append(" statusList: ");
+
+        for (int i = 0; i < statusList.size(); i++) {
+
+            if (i + 1 == statusList.size()) {
+                builder.append(" " + statusList.get(i).toString());
+            } else {
+                builder.append(" " + statusList.get(i).toString() + "-->");
+            }
+        }
+        builder.append("}");
+
+        return builder.toString();
     }
 }

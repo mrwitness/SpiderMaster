@@ -5,12 +5,11 @@ import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.ProcessUtil;
 import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
-import wuxian.me.spidermaster.agent.SpiderAgent;
-import wuxian.me.spidermaster.master.SpiderMaster;
-import wuxian.me.spidermaster.master.agentcontroll.StatusEnum;
-import wuxian.me.spidermaster.rpc.IRpcCallback;
-import wuxian.me.spidermaster.rpc.RpcResponse;
-import wuxian.me.spidermaster.util.SpiderConfig;
+import wuxian.me.spidermaster.framework.agent.SpiderAgent;
+import wuxian.me.spidermaster.framework.master.SpiderMaster;
+import wuxian.me.spidermaster.framework.common.StatusEnum;
+import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
+import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,6 +8,9 @@ import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
  */
 public abstract class BaseRequestHandler implements IRpcRequestHandler {
 
+    public BaseRequestHandler() {
+    }
+
     public final String getMethodName() {
         RpcMethodName annotation = (getClass().getAnnotation(RpcMethodName.class));
         if (annotation == null) {

@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster;
+package wuxian.me.spidermaster.framework.common;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
@@ -28,6 +28,8 @@ public class SpiderConfig {
     public static String masterIp;
 
     public static int masterPort;
+
+    public static String bizScan;
 
     public static void initFrom(String path) {
         Properties pro = new Properties();
@@ -62,6 +64,8 @@ public class SpiderConfig {
         masterIp = parse(pro, "masterIp", "127.0.0.1");
 
         masterPort = parse(pro, "masterPort", 3434);
+
+        bizScan = parse(pro, "bizScan", "");
 
     }
 

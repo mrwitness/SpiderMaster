@@ -7,7 +7,6 @@ import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
 
 /**
  * Created by wuxian on 11/6/2017.
- * Todo: 使用扫描器实现
  */
 
 @RpcMethodName(methodName = "heartbeat")

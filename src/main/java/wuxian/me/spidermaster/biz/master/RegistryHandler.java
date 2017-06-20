@@ -23,7 +23,7 @@ import java.util.List;
  */
 
 @RpcMethodName(methodName = "register")
-public class AgentRegisterHandler extends BaseRequestHandler {
+public class RegistryHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 

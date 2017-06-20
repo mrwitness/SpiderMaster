@@ -7,8 +7,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
+import wuxian.me.spidercommon.util.IpPortUtil;
+import wuxian.me.spidermaster.framework.common.IpPortNotValidException;
 import wuxian.me.spidermaster.framework.master.control.AgentRecorder;
 import wuxian.me.spidermaster.framework.master.control.ConnectionManager;
+import wuxian.me.spidermaster.framework.master.handler.HandlerScanner;
 import wuxian.me.spidermaster.framework.rpc.RpcDecoder;
 import wuxian.me.spidermaster.framework.rpc.RpcEncoder;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
@@ -29,6 +32,10 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
     public MasterServer(@NotNull String host, int port) {
         this.host = host;
         this.port = port;
+
+        if (!IpPortUtil.isValidIpPort(host + ":" + port)) {
+            throw new IpPortNotValidException();
+        }
     }
 
     public void start() {
@@ -36,6 +43,8 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
             return;
         }
         started = true;
+        HandlerScanner.scanAndCollect();
+
         LogManager.info("MasterServer starting...");
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();

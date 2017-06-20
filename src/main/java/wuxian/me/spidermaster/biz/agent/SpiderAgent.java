@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.agent;
+package wuxian.me.spidermaster.biz.agent;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
@@ -7,13 +7,14 @@ import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.biz.agent.RegisterRequestProducer;
 import wuxian.me.spidermaster.biz.agent.ReportStatusRequestProducer;
+import wuxian.me.spidermaster.framework.agent.SpiderClient;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.NioEnv;
 import wuxian.me.spidermaster.framework.common.StatusEnum;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
-import wuxian.me.spidermaster.SpiderConfig;
+import wuxian.me.spidermaster.framework.common.SpiderConfig;
 import wuxian.me.spidermaster.framework.common.IpPortNotValidException;
 
 import java.util.ArrayList;

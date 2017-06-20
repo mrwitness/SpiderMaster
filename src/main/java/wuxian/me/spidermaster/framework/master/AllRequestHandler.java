@@ -6,6 +6,7 @@ import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
 import wuxian.me.spidermaster.biz.master.HeartbeatHandler;
+import wuxian.me.spidermaster.framework.master.handler.HandlerScanner;
 import wuxian.me.spidermaster.framework.master.handler.IRpcRequestHandler;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
@@ -44,7 +45,7 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
         }
 
         LogManager.info("AllRequestHandler channelRead0 requestId:" + request.requestId);
-        IRpcRequestHandler handler = HandlerRegistration.findHandlerBy(request.methodName);
+        IRpcRequestHandler handler = HandlerScanner.findHandlerBy(request.methodName);
         if (handler != null) {
             LogManager.info("getRpcRequest,rpcName: " + request.methodName + " handlerClass: " + handler.getClass());
             try {

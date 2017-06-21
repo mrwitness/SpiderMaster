@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class Agent {
 
+    private List<String> roleList = new ArrayList<String>();
+
     //该agent的状态变化表
     private List<StatusEnum> statusList = new ArrayList<StatusEnum>();
 
@@ -69,6 +71,14 @@ public class Agent {
 
     public void setSpiderList(List<Spider> spiderList) {
         this.spiderList = spiderList;
+    }
+
+    public List<String> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<String> roleList) {
+        this.roleList = roleList;
     }
 
     @Override

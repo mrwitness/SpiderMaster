@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.common;
+package wuxian.me.spidermaster.framework.master.provider;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,7 +17,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Role {
-    String role() default "spider";
-
-    String ability() default "spider";
+    String role() default Roles.ROLE_SPIDER;
 }

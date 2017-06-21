@@ -31,6 +31,8 @@ public class SpiderConfig {
 
     public static String bizScan;
 
+    public static String providerScan;
+
     public static void initFrom(String path) {
         Properties pro = new Properties();
         FileInputStream in = null;
@@ -66,6 +68,8 @@ public class SpiderConfig {
         masterPort = parse(pro, "masterPort", 3434);
 
         bizScan = parse(pro, "bizScan", "");
+
+        providerScan = parse(pro, "providerScan", "");
 
     }
 

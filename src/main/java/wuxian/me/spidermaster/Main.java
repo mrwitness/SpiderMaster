@@ -5,12 +5,12 @@ import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.ProcessUtil;
 import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
+import wuxian.me.spidermaster.framework.agent.ProviderScan;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
 import wuxian.me.spidermaster.framework.master.MasterServer;
 import wuxian.me.spidermaster.framework.common.StatusEnum;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
-import wuxian.me.spidermaster.framework.master.handler.HandlerScanner;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 
 import java.util.ArrayList;
@@ -91,7 +91,8 @@ public class Main {
 
         if (true) {
             SpiderConfig.init();
-            HandlerScanner.scanAndCollect();
+            //HandlerScanner.scanAndCollect();
+            ProviderScan.scanAndCollect();
         } else {
             new Main().start();
         }

@@ -32,6 +32,7 @@ public class SpiderClient implements IClient {
 
     public void init() {
         sender.init();
+        ProviderScan.scanAndCollect();
     }
 
     public SocketChannel channel() {

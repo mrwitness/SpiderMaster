@@ -1,5 +1,6 @@
 package wuxian.me.spidermaster.biz.agent;
 
+import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.model.SpiderFeature;
 import wuxian.me.spidermaster.framework.agent.request.BaseRequestProducer;
 import wuxian.me.spidermaster.framework.agent.request.RequestIdGen;
@@ -21,12 +22,21 @@ public class RegisterRequestProducer extends BaseRequestProducer {
 
     public List<String> urlPatternList = null;
 
+    public List<String> roleList = null;
+
     public RegisterRequestProducer(List<String> classList, List<String> urlPatternList) {
 
-        this.classList = classList;
-        this.urlPatternList = urlPatternList;
+        this(classList, urlPatternList, null);
+
     }
 
+    public RegisterRequestProducer(List<String> classList, List<String> urlPatternList, @Nullable List<String> roles) {
+        this.classList = classList;
+        this.urlPatternList = urlPatternList;
+        this.roleList = roleList;
+    }
+
+    //Todo: agent加上角色
     public RpcRequest produce() {
         int len = 0;
 

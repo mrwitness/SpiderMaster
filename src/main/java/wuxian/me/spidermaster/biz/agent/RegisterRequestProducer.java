@@ -2,6 +2,7 @@ package wuxian.me.spidermaster.biz.agent;
 
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.model.SpiderFeature;
+import wuxian.me.spidermaster.biz.model.RegisterReqModel;
 import wuxian.me.spidermaster.framework.agent.request.BaseRequestProducer;
 import wuxian.me.spidermaster.framework.agent.request.RequestIdGen;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
@@ -49,7 +50,6 @@ public class RegisterRequestProducer extends BaseRequestProducer {
             len = a <= b ? a : b;
         }
 
-
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.requestId = String.valueOf(RequestIdGen.genId());
         rpcRequest.methodName = getRpcBizName();
@@ -66,7 +66,11 @@ public class RegisterRequestProducer extends BaseRequestProducer {
             }
         }
 
-        rpcRequest.datas = GsonProvider.gson().toJson(featureList);
+        RegisterReqModel model = new RegisterReqModel();
+        model.featureList = featureList;
+        model.providerList = roleList;
+
+        rpcRequest.datas = GsonProvider.gson().toJson(model);
 
         return rpcRequest;
     }

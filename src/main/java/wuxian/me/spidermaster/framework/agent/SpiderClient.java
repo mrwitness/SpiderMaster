@@ -33,7 +33,7 @@ public class SpiderClient implements IClient {
 
     public void init() {
         sender.init();
-        ProviderScan.scanAndCollect();
+
         ResourceHandler.init();
     }
 
@@ -135,7 +135,7 @@ public class SpiderClient implements IClient {
                                 , DefaultCallback.ins());
                     }
                     try {
-                        sleep(15 * 1000);
+                        sleep(5 * 1000);
                     } catch (InterruptedException e) {
                         break;
                     }
@@ -158,7 +158,7 @@ public class SpiderClient implements IClient {
             RpcRequest req = sender.getRequestBy(response.requestId);
             if (req != null) {
                 if (req.methodName.equals(registerRpc)) { //只有注册成功了才发起心跳
-                    startHeartbeatThread();
+                    //startHeartbeatThread();  //Todo:先关掉心跳
                 }
             }
         }

@@ -7,6 +7,7 @@ import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
 import wuxian.me.spidermaster.framework.agent.ProviderScan;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
+import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
 import wuxian.me.spidermaster.framework.master.MasterServer;
 import wuxian.me.spidermaster.framework.common.StatusEnum;
@@ -29,7 +30,7 @@ public class Main {
         ShellUtil.init();
 
         signalManager.init();
-        signalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
+        SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
             public void onSystemKilled() {
                 LogManager.info("onSystemKilled");
 
@@ -39,9 +40,22 @@ public class Main {
 
         if (SpiderConfig.spiderMode == 0) {     //agent mode
             startAgent();
-        } else {                                //master mode
+        } else if (SpiderConfig.spiderMode == 1) {                                //master mode
             startMaster();
+        } else {
+            startFakeProxy();
         }
+    }
+
+    private void startFakeProxy() {
+        LogManager.info("startFakeProxy...");
+
+        SpiderAgent.init();
+
+        final SpiderAgent agent = new SpiderAgent();
+        agent.start();
+
+        agent.registerToMaster(null, null, DefaultCallback.ins());
     }
 
     private void startAgent() {
@@ -69,9 +83,26 @@ public class Main {
 
             @Override
             public void onResponseSuccess(RpcResponse response) {
-                agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
+                //agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
+                //agent.reportAgentStatus(StatusEnum.BLOCKED);
 
-                agent.reportAgentStatus(StatusEnum.BLOCKED);
+                agent.requestProxy(new IRpcCallback() {
+                    @Override
+                    public void onSent() {
+
+                    }
+
+                    @Override
+                    public void onResponseSuccess(RpcResponse response) {
+
+                        LogManager.info("requestProxy.onResponseSuccess");
+                    }
+
+                    @Override
+                    public void onResponseFail() {
+
+                    }
+                });
             }
 
             @Override
@@ -87,15 +118,8 @@ public class Main {
                 .start();
     }
 
+
     public static void main(String[] args) {
-
-        if (true) {
-            SpiderConfig.init();
-            //HandlerScanner.scanAndCollect();
-            ProviderScan.scanAndCollect();
-        } else {
-            new Main().start();
-        }
-
+        new Main().start();
     }
 }

@@ -5,8 +5,7 @@ import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
-import wuxian.me.spidermaster.biz.agent.RegisterRequestProducer;
-import wuxian.me.spidermaster.biz.agent.ReportStatusRequestProducer;
+import wuxian.me.spidermaster.framework.agent.ProviderScan;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
@@ -54,13 +53,18 @@ public class SpiderAgent {
 
     public void start() {
         NioEnv.init();
+        ProviderScan.scanAndCollect();
         spiderClient.init();
         spiderClient.asyncConnect(serverIp, serverPort);
     }
 
+    public void requestProxy(IRpcCallback cb) {
+        RpcRequest rpcRequest = new GetproxyRequestProducer().produce();
+        spiderClient.asyncSendMessage(rpcRequest, cb);
+    }
+
     public void registerToMaster(@Nullable List<Class<?>> classList, @Nullable List<HttpUrlNode> nodeList, final IRpcCallback callback) {
         if (classList == null) {
-
             classList = new ArrayList<Class<?>>();
         }
 
@@ -79,7 +83,8 @@ public class SpiderAgent {
             patternList.add(node.baseUrl);
         }
 
-        RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList).produce();
+
+        RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList, ProviderScan.getProviderList()).produce();
 
         LogManager.info("registerToMaster,rpc: "+rpcRequest);
         spiderClient.asyncSendMessage(rpcRequest

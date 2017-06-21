@@ -28,7 +28,6 @@ public class HandlerScanner {
     public static void scanAndCollect() {
 
         String pack = SpiderConfig.bizScan;
-
         if (pack == null || pack.length() == 0) {
             throw new InitEnvException("bizScan in spider.properties not set");
         }
@@ -47,15 +46,13 @@ public class HandlerScanner {
 
     private static void performCheckAndCollect(Class clazz) {
 
+        LogManager.info("performCheck clazz:" + clazz.getName());
         if (Modifier.isAbstract(clazz.getModifiers())) {
             return;
         }
 
         try {
-            Class b = clazz.asSubclass(IRpcRequestHandler.class);
-            if (b == null) {
-                return;
-            }
+            clazz.asSubclass(IRpcRequestHandler.class);
         } catch (ClassCastException e) {
             return;
         }
@@ -71,6 +68,7 @@ public class HandlerScanner {
 
             IRpcRequestHandler o = (IRpcRequestHandler) constructor.newInstance(null);
             handlerMap.put(o.getMethodName(), o);
+            LogManager.info("find handler: " + clazz.getName());
 
             return;
 

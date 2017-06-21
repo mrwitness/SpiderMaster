@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import wuxian.me.spidercommon.log.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class RpcEncoder extends MessageToByteEncoder {
     @Override
     public void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) throws Exception {
 
+        LogManager.info("RpcEncode.encode");
         for (Class<?> claz : classList) { //支持多种encoder
             if (claz.isInstance(in)) {
                 byte[] data = SerializationUtil.serialize(in);

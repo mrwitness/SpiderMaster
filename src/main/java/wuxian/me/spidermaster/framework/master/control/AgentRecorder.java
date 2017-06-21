@@ -3,6 +3,7 @@ package wuxian.me.spidermaster.framework.master.control;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.master.control.Agent;
+import wuxian.me.spidermaster.framework.master.provider.ProviderManager;
 
 import java.util.*;
 
@@ -58,8 +59,17 @@ public class AgentRecorder {
                 if(!agentSet.contains(agent)) {
                     agentSet.add(agent);
                 }
-                if (agent.getChannel() != null) {
-                    map.put(agent.getChannel(), agent);
+                if (agent.getChannel() == null) {
+                    return;
+                }
+
+                map.put(agent.getChannel(), agent);
+
+                List<String> providerList = agent.getProviderList();
+                if (providerList != null && providerList.size() != 0) {
+                    for (String s : providerList) {
+                        ProviderManager.registerProvider(s, agent);
+                    }
                 }
             }
         } else {  //这种情况一般是被reportStatus调用

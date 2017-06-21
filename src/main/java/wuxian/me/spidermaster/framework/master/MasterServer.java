@@ -56,7 +56,10 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
 
+                            LogManager.info("masterServer.initChannel");
+                            LogManager.info("1");
                             ConnectionManager.recordConnection(socketChannel);
+                            LogManager.info("2");
 
                             List<Class<?>> classList = new ArrayList<Class<?>>();
                             classList.add(RpcResponse.class);
@@ -79,7 +82,7 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
 
-            AgentRecorder.startPrintAgentThread();
+            //AgentRecorder.startPrintAgentThread(); //暂时注释掉
 
             future.channel().read();
 

@@ -27,6 +27,13 @@ public class ProviderScan {
 
     private static Map<String, Method> methodMap = new ConcurrentHashMap<String, Method>();
 
+    public static List<String> getProviderList() {
+        List<String> list = new ArrayList<String>();
+        list.addAll(providerMap.keySet());
+
+        return list;
+    }
+
     public static void scanAndCollect() {
 
         String pack = SpiderConfig.providerScan;

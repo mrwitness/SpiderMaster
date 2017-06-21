@@ -50,7 +50,6 @@ public class MessageSender {
             public void run() {
                 while (true) {
                     while (true) {
-                        LogManager.info("dispatchThread.run");
 
                         boolean canPoll = (client != null && client.channel() != null && !requestQueue.isEmpty());
                         if (!canPoll) {
@@ -73,9 +72,8 @@ public class MessageSender {
                         RpcRequest rpcRequest = requestQueue.poll();
                         LogManager.info("before send rpc request... " + rpcRequest.toString());
                         try {
-                            LogManager.info("before flush");
                             client.channel().writeAndFlush(rpcRequest).await();
-                            LogManager.info("finish flush");
+
                         } catch (InterruptedException e) {
                             LogManager.error("sender InterruptedExcepiton");
                         }

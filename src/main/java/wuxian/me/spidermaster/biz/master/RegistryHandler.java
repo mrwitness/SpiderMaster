@@ -1,9 +1,9 @@
 package wuxian.me.spidermaster.biz.master;
 
-import com.google.gson.reflect.TypeToken;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.SpiderFeature;
+import wuxian.me.spidermaster.biz.model.RegisterReqModel;
 import wuxian.me.spidermaster.framework.common.GsonProvider;
 import wuxian.me.spidermaster.framework.master.control.Agent;
 import wuxian.me.spidermaster.framework.master.control.AgentRecorder;
@@ -33,8 +33,13 @@ public class RegistryHandler extends BaseRequestHandler {
 
         String data = request.datas;
 
-        List<SpiderFeature> featureList = GsonProvider.gson().fromJson(data,new TypeToken<List<SpiderFeature>>(){}.getType());
+        RegisterReqModel model = GsonProvider.gson().fromJson(data, RegisterReqModel.class);
 
+        if (model == null) {
+            return RpcRetCode.FAIL.ordinal(); //Todo
+        }
+
+        List<SpiderFeature> featureList = model.featureList;
         if(featureList == null ) {
             featureList = new ArrayList<SpiderFeature>();
         }
@@ -42,12 +47,12 @@ public class RegistryHandler extends BaseRequestHandler {
         Agent agent = new Agent();
         agent.setCurrentState(StatusEnum.REGISTERED);
         agent.setChannel(channel);
+        agent.setProviderList(model.providerList);
 
         List<Spider> spiderList = new ArrayList<Spider>();
         for(SpiderFeature feature:featureList) {
             spiderList.add(Spider.fromFeature(feature));
         }
-
         agent.setSpiderList(spiderList);
         AgentRecorder.recordAgent(agent);
 

@@ -46,8 +46,8 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
         HandlerScanner.scanAndCollect();
 
         LogManager.info("MasterServer starting...");
-        EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup();
+        EventLoopGroup boss = new NioEventLoopGroup(10);
+        EventLoopGroup worker = new NioEventLoopGroup(10);
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -70,12 +70,12 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AllRequestHandler(socketChannel))
                                     .addLast(new ResponseHandler(socketChannel))
-                                    .addLast(MasterServer.this)
+                            //.addLast(MasterServer.this)
                             ;
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
-                    .option(ChannelOption.AUTO_READ, false)
+                    .option(ChannelOption.AUTO_READ, true)   //If Not Being Set,Can't accpet to multi client!!!
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             LogManager.info("Master Server begin to bind port: " + port);
@@ -83,8 +83,6 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
             LogManager.info("Bind success");
 
             //AgentRecorder.startPrintAgentThread(); //暂时注释掉
-
-            future.channel().read();
 
             future.channel().closeFuture().sync();
 

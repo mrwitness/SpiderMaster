@@ -107,15 +107,20 @@ public class SpiderClient implements IClient {
     }
 
     public Object onReceiveMessage(RpcRequest request) {
-        LogManager.info("onReceiveMessage: " + Thread.currentThread().getName());
+        LogManager.info("onReceiveMessage: request:" + request.methodName + " thread:" + Thread.currentThread().getName());
         if (request == null) {
             return null;
         }
 
-        if (!requestMap.containsKey(request)) {
+        if (!requestMap.containsKey(request.methodName)) {
+            LogManager.info("find handler fail");
             return null;
         }
-        return requestMap.get(request).onRpcRequest(request);
+
+        OnRpcRequest onRpcRequest = requestMap.get(request.methodName);
+        LogManager.info("find handler: " + onRpcRequest.toString());
+
+        return onRpcRequest.onRpcRequest(request);
 
     }
 
@@ -179,17 +184,17 @@ public class SpiderClient implements IClient {
         connected = false;
     }
 
-    private static Map<RpcRequest, OnRpcRequest> requestMap = new HashMap<RpcRequest, OnRpcRequest>();
+    private static Map<String, OnRpcRequest> requestMap = new HashMap<String, OnRpcRequest>();
 
     public static void registerMessageNotify(RpcRequest request, OnRpcRequest onRpcRequest) {
         if (request == null || onRpcRequest == null) {
             return;
         }
 
-        if (requestMap.containsKey(request)) {
+        if (requestMap.containsKey(request.methodName)) {
             return;
         }
-        requestMap.put(request, onRpcRequest);
+        requestMap.put(request.methodName, onRpcRequest);
     }
 
 }

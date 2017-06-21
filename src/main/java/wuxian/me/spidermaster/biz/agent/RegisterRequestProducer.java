@@ -34,10 +34,10 @@ public class RegisterRequestProducer extends BaseRequestProducer {
     public RegisterRequestProducer(List<String> classList, List<String> urlPatternList, @Nullable List<String> roles) {
         this.classList = classList;
         this.urlPatternList = urlPatternList;
-        this.roleList = roleList;
+        this.roleList = roles;
     }
 
-    //Todo: agent加上角色
+
     public RpcRequest produce() {
         int len = 0;
 

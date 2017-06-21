@@ -62,6 +62,7 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
             response.retCode = RpcRetCode.FAIL.ordinal(); //Todo:设计一些错误返回码
         }
 
+        LogManager.info("before AllRequestHanlder.writeAndFlush");
         channelHandlerContext.writeAndFlush(response);
     }
 }

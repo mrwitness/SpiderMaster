@@ -1,5 +1,6 @@
 package wuxian.me.spidermaster.framework.agent.onrequest;
 
+import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.agent.ProviderScan;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
 import wuxian.me.spidermaster.framework.master.provider.Requestor;
@@ -23,8 +24,23 @@ public class ResourceHandler implements OnRpcRequest {
 
     @Override
     public Object onRpcRequest(RpcRequest request) {
+        LogManager.info("ResourceHandler.onRpcRequest");
         String resource = request.datas;
 
-        return ProviderScan.provideResource(resource);
+        Object o = ProviderScan.provideResource(resource);
+
+        if (o == null) {
+            LogManager.info("providerScan return null");
+        } else {
+            LogManager.info("providerScan return " + o.toString());
+        }
+
+
+        return o;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceHandler{}";
     }
 }

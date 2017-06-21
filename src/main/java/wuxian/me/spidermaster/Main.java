@@ -55,6 +55,7 @@ public class Main {
         final SpiderAgent agent = new SpiderAgent();
         agent.start();
 
+        ProviderScan.performCheckAndCollect(FakeProxyProvider.class);
         agent.registerToMaster(null, null, DefaultCallback.ins());
     }
 

@@ -43,6 +43,14 @@ public class RequestSourceHandler extends BaseRequestHandler {
 
         LogManager.info("after waitForResource");
 
-        return ResourcePool.getResourceBy(request.requestId, resource);  //依然有可能为null
+        Resource ret = ResourcePool.getResourceBy(request.requestId, resource);  //依然有可能为null
+
+        if (ret == null) {
+            LogManager.info("get ret null");
+        } else {
+            LogManager.info("get ret: " + ret);
+        }
+
+        return ret;
     }
 }

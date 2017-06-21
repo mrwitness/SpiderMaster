@@ -1,6 +1,7 @@
 package wuxian.me.spidermaster.framework.agent;
 
 import com.sun.istack.internal.Nullable;
+import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.util.ClassHelper;
 import wuxian.me.spidermaster.framework.master.provider.IProvider;
 import wuxian.me.spidermaster.framework.master.provider.Provider;
@@ -43,7 +44,7 @@ public class ProviderScan {
         }
 
         try {
-            Set<Class<?>> classSet = ClassHelper.getClasses(pack);
+            Set<Class<?>> classSet = ClassHelper.getClasses(pack);  //Fixme:这个函数有bug 并不能扫描到所有类
 
             for (Class clazz : classSet) {
                 performCheckAndCollect(clazz);
@@ -61,11 +62,12 @@ public class ProviderScan {
      *
      * @param clazz
      */
-    private static void performCheckAndCollect(Class clazz) {
-
+    public static void performCheckAndCollect(Class clazz) {
         if (clazz == null) {
             return;
         }
+
+        LogManager.info("perform check: " + clazz.getName());
 
         Provider annotation = (Provider) (clazz.getAnnotation(Provider.class));
         if (annotation == null) {
@@ -112,6 +114,8 @@ public class ProviderScan {
             Method method = clazz.getMethod("provide");
             providerMap.put(annotation.provide(), provider);
             methodMap.put(annotation.provide(), method);
+
+            LogManager.info("find provider:" + clazz.getName() + " provide:" + annotation.provide());
 
         } catch (NoSuchMethodException e) {
 

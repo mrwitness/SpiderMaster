@@ -21,7 +21,7 @@ public interface IClient {
     //主动调用disconnect
     void doDisconnectFromServer();
 
-    void onReceiveMessage(RpcRequest request);
+    Object onReceiveMessage(RpcRequest request);
 
     void onRpcResponse(RpcResponse response);
 

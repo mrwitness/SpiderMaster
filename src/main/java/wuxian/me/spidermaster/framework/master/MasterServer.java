@@ -66,6 +66,7 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
                                     .addLast(new RpcDecoder(classList))
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AllRequestHandler(socketChannel))
+                                    .addLast(new ResponseHandler(socketChannel))
                                     .addLast(MasterServer.this)
                             ;
                         }

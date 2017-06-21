@@ -1,5 +1,7 @@
 package wuxian.me.spidermaster.framework.agent.request;
 
+import com.sun.istack.internal.Nullable;
+import wuxian.me.spidermaster.framework.master.provider.Requestor;
 import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
 
 /**
@@ -8,6 +10,11 @@ import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
 public abstract class BaseRequestProducer implements IRequestProducer {
 
     protected final String getRpcBizName() {
+
+        Requestor requestor = (getClass()).getAnnotation(Requestor.class);
+        if (requestor != null) {
+            return Requestor.REQUEST_RESROURCE;
+        }
 
         RpcMethodName annotation = (getClass().getAnnotation(RpcMethodName.class));
         if (annotation == null) {
@@ -20,5 +27,15 @@ public abstract class BaseRequestProducer implements IRequestProducer {
         }
 
         return method;
+    }
+
+    @Nullable
+    protected final String getRequestResourceName() {
+        Requestor requestor = (getClass()).getAnnotation(Requestor.class);
+        if (requestor != null) {
+            return requestor.request();
+        }
+
+        return null;
     }
 }

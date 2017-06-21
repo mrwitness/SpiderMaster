@@ -7,5 +7,5 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
  */
 public interface OnRpcRequest {
 
-    void onRpcRequest(RpcRequest request);
+    Object onRpcRequest(RpcRequest request);
 }

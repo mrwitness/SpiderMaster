@@ -6,6 +6,7 @@ import wuxian.me.spidermaster.biz.agent.HeartbeatRequestProducer;
 import wuxian.me.spidermaster.framework.agent.connection.MessageSender;
 import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequest;
 import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequestHandler;
+import wuxian.me.spidermaster.framework.agent.onrequest.ResourceHandler;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.IConnectCallback;
@@ -33,6 +34,7 @@ public class SpiderClient implements IClient {
     public void init() {
         sender.init();
         ProviderScan.scanAndCollect();
+        ResourceHandler.init();
     }
 
     public SocketChannel channel() {
@@ -104,16 +106,17 @@ public class SpiderClient implements IClient {
         onSocketClosed();
     }
 
-    public void onReceiveMessage(RpcRequest request) {
+    public Object onReceiveMessage(RpcRequest request) {
         LogManager.info("onReceiveMessage: " + Thread.currentThread().getName());
         if (request == null) {
-            return;
+            return null;
         }
 
         if (!requestMap.containsKey(request)) {
-            return;
+            return null;
         }
-        requestMap.get(request).onRpcRequest(request);
+        return requestMap.get(request).onRpcRequest(request);
+
     }
 
     private void startHeartbeatThread() {
@@ -178,8 +181,6 @@ public class SpiderClient implements IClient {
 
     private static Map<RpcRequest, OnRpcRequest> requestMap = new HashMap<RpcRequest, OnRpcRequest>();
 
-    //Todo:用于接受master的指令 目前并无相关需求
-    //业务层只需实现OnRpcRequest接口并注册即可
     public static void registerMessageNotify(RpcRequest request, OnRpcRequest onRpcRequest) {
         if (request == null || onRpcRequest == null) {
             return;

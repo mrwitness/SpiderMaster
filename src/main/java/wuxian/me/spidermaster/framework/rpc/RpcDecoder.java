@@ -41,7 +41,6 @@ public class RpcDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx,
                           ByteBuf in, List<Object> out) throws Exception {
 
-        LogManager.info("RpcDecoder.decode");
         if (classList == null || classList.size() == 0) {
             return;
         }

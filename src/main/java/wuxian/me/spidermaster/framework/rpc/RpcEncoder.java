@@ -41,7 +41,6 @@ public class RpcEncoder extends MessageToByteEncoder {
     @Override
     public void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) throws Exception {
 
-        LogManager.info("RpcEncode.encode");
         for (Class<?> claz : classList) { //支持多种encoder
             if (claz.isInstance(in)) {
                 byte[] data = SerializationUtil.serialize(in);

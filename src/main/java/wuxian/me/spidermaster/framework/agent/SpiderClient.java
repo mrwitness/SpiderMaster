@@ -60,11 +60,9 @@ public class SpiderClient implements IClient {
                 connected = true;
 
                 sender.onConncetSuccess();
-                LogManager.info("connect success,channel " + channel);
             }
 
             public void onFail() {
-                LogManager.info("connect fail");
 
                 connected = false;
                 onSocketClosed();
@@ -107,13 +105,13 @@ public class SpiderClient implements IClient {
     }
 
     public Object onReceiveMessage(RpcRequest request) {
-        LogManager.info("onReceiveMessage: request:" + request.methodName + " thread:" + Thread.currentThread().getName());
+        LogManager.info("onReceiveMessage: request:" + request.methodName);
         if (request == null) {
             return null;
         }
 
         if (!requestMap.containsKey(request.methodName)) {
-            LogManager.info("find handler fail");
+            LogManager.error("can't handle request");
             return null;
         }
 
@@ -153,17 +151,13 @@ public class SpiderClient implements IClient {
     }
 
     public void onRpcResponse(RpcResponse response) {
-
-        LogManager.info("SpiderClient.onRpcResponse response: " + response.toString());
-        LogManager.info("currentThread: " + Thread.currentThread().getName());
-
         if (sender != null) {
             sender.onRpcResponse(response);
 
             RpcRequest req = sender.getRequestBy(response.requestId);
             if (req != null) {
                 if (req.methodName.equals(registerRpc)) { //只有注册成功了才发起心跳
-                    //startHeartbeatThread();  //Todo:先关掉心跳
+                    startHeartbeatThread();
                 }
             }
         }

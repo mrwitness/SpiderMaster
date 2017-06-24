@@ -41,15 +41,12 @@ public class ResourcePool {
         }
 
         resourcePool.put(reqId, resource);
-        LogManager.info("putResource reqId:" + reqId + " resource:" + resource);
 
         Lock lock = getLock(reqId);
         Condition condition = getConditionBy(lock);
 
         lock.lock();
         try {
-            LogManager.info("notifyAll lock:" + lock.toString() + " condition:" + condition.toString());
-
             condition.signalAll();
         } catch (IllegalMonitorStateException e) {
             LogManager.error("putResource " + e.getMessage());
@@ -66,14 +63,11 @@ public class ResourcePool {
             return;
         }
 
-        LogManager.info("waitForResource reqId:" + reqId + " resource:" + resource);
-
         Lock lock = getLock(reqId);
         Condition condition = getConditionBy(lock);
 
         lock.lock();
         try {
-            LogManager.info("wait lock:" + lock.toString() + " condition:" + condition.toString());
             condition.await();
         } catch (InterruptedException e) {
             ;

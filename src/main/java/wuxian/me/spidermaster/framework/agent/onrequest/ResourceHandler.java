@@ -30,9 +30,9 @@ public class ResourceHandler implements OnRpcRequest {
         Object o = ProviderScan.provideResource(resource);
 
         if (o == null) {
-            LogManager.info("providerScan return null");
+            LogManager.info("onRpcRequest return null");
         } else {
-            LogManager.info("providerScan return " + o.toString());
+            LogManager.info("onRpcRequest return " + o.toString());
         }
 
 

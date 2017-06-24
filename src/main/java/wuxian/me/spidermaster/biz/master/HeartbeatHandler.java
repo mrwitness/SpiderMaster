@@ -10,7 +10,6 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
 /**
  * Created by wuxian on 11/6/2017.
- * Todo: 使用扫描器实现
  */
 
 @RpcMethodName(methodName = "heartbeat")
@@ -18,7 +17,6 @@ public class HeartbeatHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
-        LogManager.info("HeartbeatHandler.handleRequest");
         return RpcRetCode.SUCCESS.ordinal();
     }
 }

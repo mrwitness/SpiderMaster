@@ -17,7 +17,6 @@ public class ProviderManager {
     private ProviderManager() {
     }
 
-    //Todo:be called on @RegisterHandler
     public static void registerProvider(String provider, Agent agent) {
         if (provider == null || provider.length() == 0 || agent == null) {
             return;
@@ -36,7 +35,7 @@ public class ProviderManager {
     }
 
     @Nullable
-    public static SocketChannel findProviderChannle(String provider) {
+    public static SocketChannel findProviderChannel(String provider) {
         Agent agent = findProvider(provider);
         if (agent == null) {
             return null;

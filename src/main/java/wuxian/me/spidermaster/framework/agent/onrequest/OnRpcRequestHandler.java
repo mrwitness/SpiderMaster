@@ -11,8 +11,6 @@ import wuxian.me.spidermaster.framework.rpc.RpcRetCode;
 
 /**
  * Created by wuxian on 9/6/2017.
- * <p>
- * 命令响应模式
  */
 public class OnRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
@@ -24,7 +22,7 @@ public class OnRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest>
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext
             , RpcRequest request) throws Exception {
-        Object o = this.client.onReceiveMessage(request);  //Todo:后续扩展业务在这里处理
+        Object o = this.client.onReceiveMessage(request);
 
         RpcResponse response = new RpcResponse();
         response.requestId = request.requestId;
@@ -36,6 +34,5 @@ public class OnRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest>
         response.result = o;
 
         channelHandlerContext.writeAndFlush(response);
-
     }
 }

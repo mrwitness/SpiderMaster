@@ -38,10 +38,12 @@ public class Main {
             }
         });
 
-        if (SpiderConfig.spiderMode == 0) {     //agent mode
+        if (SpiderConfig.spiderMode == 0) {
             startAgent();
-        } else if (SpiderConfig.spiderMode == 1) {                                //master mode
+
+        } else if (SpiderConfig.spiderMode == 1) {
             startMaster();
+
         } else {
             startFakeProxy();
         }
@@ -96,7 +98,7 @@ public class Main {
                     @Override
                     public void onResponseSuccess(RpcResponse response) {
 
-                        LogManager.info("requestProxy.onResponseSuccess");
+                        LogManager.info("requestProxy.onResponseSuccess");  //测试用
                     }
 
                     @Override

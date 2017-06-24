@@ -59,15 +59,12 @@ public class ProviderScan {
      * 1 被@Provider注解
      * 2 实现IProvider接口
      * 3 构造函数为public
-     *
      * @param clazz
      */
     public static void performCheckAndCollect(Class clazz) {
         if (clazz == null) {
             return;
         }
-
-        LogManager.info("perform check: " + clazz.getName());
 
         Provider annotation = (Provider) (clazz.getAnnotation(Provider.class));
         if (annotation == null) {

@@ -20,37 +20,29 @@ public class RequestSourceHandler extends BaseRequestHandler {
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
         LogManager.info("RequestSourceHandler.handleRequest");
-
         String resource = request.datas;
         if (resource == null || resource.length() == 0) {
             return null;
         }
 
-        LogManager.info("begin search channel which can handle this resource");
-        SocketChannel providerChannle = ProviderManager.findProviderChannle(resource);
-        if (providerChannle == null) {
-
-            LogManager.info("No channel found");
+        SocketChannel providerChannel = ProviderManager.findProviderChannel(resource);
+        if (providerChannel == null) {
             return null;
         }
 
-        LogManager.info("find channel: " + providerChannle.toString());
-
-        providerChannle.writeAndFlush(request);  //将请求转发
-
+        LogManager.info("find channel: " + providerChannel.toString() + " who will handle the source request");
+        providerChannel.writeAndFlush(request);
         LogManager.info("wait for resource...");
+
         ResourcePool.waitForResource(request.requestId, resource);//Todo timeout
 
-        LogManager.info("after waitForResource");
+        Resource res = ResourcePool.getResourceBy(request.requestId, resource);  //依然有可能为null
 
-        Resource ret = ResourcePool.getResourceBy(request.requestId, resource);  //依然有可能为null
-
-        if (ret == null) {
-            LogManager.info("get ret null");
+        if (res == null) {
+            LogManager.info("get resource fail");
         } else {
-            LogManager.info("get ret: " + ret);
+            LogManager.info("get resource: " + res.toString());
         }
-
-        return ret;
+        return res;
     }
 }

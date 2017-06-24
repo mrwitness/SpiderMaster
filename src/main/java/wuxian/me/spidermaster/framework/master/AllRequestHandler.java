@@ -44,7 +44,6 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
             return;
         }
 
-        LogManager.info("AllRequestHandler channelRead0 requestId:" + request.requestId + " requestName:" + request.methodName);
         IRpcRequestHandler handler = HandlerScanner.findHandlerBy(request.methodName);
         if (handler != null) {
             LogManager.info("getRpcRequest,rpcName: " + request.methodName + " handlerClass: " + handler.getClass());
@@ -62,7 +61,6 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
             response.retCode = RpcRetCode.FAIL.ordinal(); //Todo:设计一些错误返回码
         }
 
-        LogManager.info("before AllRequestHanlder.writeAndFlush");
         channelHandlerContext.writeAndFlush(response);
     }
 }

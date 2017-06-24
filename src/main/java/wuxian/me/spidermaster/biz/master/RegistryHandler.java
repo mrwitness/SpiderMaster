@@ -27,10 +27,6 @@ public class RegistryHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
-        LogManager.info("receive register rpc");
-        LogManager.info("current thread: " + Thread.currentThread());
-        LogManager.info("current channel: " + channel.toString());
-
         String data = request.datas;
 
         RegisterReqModel model = GsonProvider.gson().fromJson(data, RegisterReqModel.class);

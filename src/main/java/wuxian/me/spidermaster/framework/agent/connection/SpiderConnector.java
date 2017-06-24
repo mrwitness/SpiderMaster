@@ -36,10 +36,8 @@ public class SpiderConnector implements Runnable {
         future.awaitUninterruptibly();
 
         if (future.isCancelled()) {
-            LogManager.info("future isCancelled");
-
             if (connectCallback != null) {
-                connectCallback.onFail();
+                connectCallback.onFail();  //Todo:print cause
             }
             return;
 
@@ -47,8 +45,6 @@ public class SpiderConnector implements Runnable {
             if (connectCallback != null) {
                 connectCallback.onFail();
             }
-            LogManager.info("future isFail");
-            LogManager.info("cause: " + future.cause().toString());
             return;
         }
 
@@ -59,7 +55,7 @@ public class SpiderConnector implements Runnable {
         if (connectCallback != null) {
             connectCallback.onClosed();
         }
-        LogManager.info("SpiderConnector.close");
+        LogManager.info("SpiderConnector.closed");
     }
 
     public void run() {

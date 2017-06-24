@@ -19,10 +19,7 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 public class ReportStatusHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
-
-        LogManager.info("ReportStatusHandler.handleRequest");
         Agent agent = AgentRecorder.findByChannel(channel);
-        LogManager.info("find Agent:" + agent);
 
         if (agent != null) {
             StatusEnum statusEnum = StatusEnum.values()[Integer.parseInt(request.datas)];

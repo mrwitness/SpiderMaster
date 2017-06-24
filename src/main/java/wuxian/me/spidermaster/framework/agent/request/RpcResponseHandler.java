@@ -19,7 +19,6 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext,
                                 RpcResponse rpcResponse) throws Exception {
-        LogManager.info("RpcResponseHandler.channelRead0");
         if (client == null) {
             return;
         }
@@ -29,7 +28,5 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-
-        LogManager.error("AgetRpcResponseHandler.exceptionCaught");
     }
 }

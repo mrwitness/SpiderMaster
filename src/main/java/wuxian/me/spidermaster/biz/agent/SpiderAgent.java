@@ -86,18 +86,15 @@ public class SpiderAgent {
 
         RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList, ProviderScan.getProviderList()).produce();
 
-        LogManager.info("registerToMaster,rpc: "+rpcRequest);
         spiderClient.asyncSendMessage(rpcRequest
                 , new IRpcCallback() {
                     public void onSent() {
                         if (callback != null) {
                             callback.onSent();
                         }
-
                     }
 
                     public void onResponseSuccess(RpcResponse response) {
-                        LogManager.info("register rpc success");
 
                         if (callback != null) {
                             callback.onResponseSuccess(response);
@@ -105,7 +102,6 @@ public class SpiderAgent {
                     }
 
                     public void onResponseFail() {
-                        LogManager.info("register rpc fail");
 
                         if (callback != null) {
                             callback.onResponseFail();

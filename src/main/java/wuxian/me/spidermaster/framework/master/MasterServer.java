@@ -45,7 +45,6 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
         started = true;
         HandlerScanner.scanAndCollect();
 
-        LogManager.info("MasterServer starting...");
         EventLoopGroup boss = new NioEventLoopGroup(10);
         EventLoopGroup worker = new NioEventLoopGroup(10);
 
@@ -56,11 +55,7 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
 
-                            LogManager.info("masterServer.initChannel");
-                            LogManager.info("1");
                             ConnectionManager.recordConnection(socketChannel);
-                            LogManager.info("2");
-
                             List<Class<?>> classList = new ArrayList<Class<?>>();
                             classList.add(RpcResponse.class);
                             classList.add(RpcRequest.class);

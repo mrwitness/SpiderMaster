@@ -65,12 +65,17 @@ public class MessageSender {
                         if (client.channel().isShutdown()) {
                             //连接被关闭：可能是远程主动关闭的,
                             //这时候正确的处理是方式应该是由SpiderClient进行重连 直到用户kill整个进程
-                            LogManager.info("channel is shutdown...");
-                            return;
+                            LogManager.info("channel is shutdown...switch to wait state");
+                            synchronized (this) {
+                                try {
+                                    wait();
+                                } catch (InterruptedException e) {
+                                    ;
+                                }
+                            }
                         }
 
                         RpcRequest rpcRequest = requestQueue.poll();
-                        LogManager.info("before send rpc request... " + rpcRequest.toString());
                         try {
                             client.channel().writeAndFlush(rpcRequest).await();
 
@@ -88,8 +93,6 @@ public class MessageSender {
 
 
     public void put(RpcRequest request, IRpcCallback onRpcReques) {
-
-        LogManager.info("MessageSender.put");
         if (request == null) {
             return;
         }

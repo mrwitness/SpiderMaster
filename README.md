@@ -3,7 +3,9 @@
 Enpower [SpiderSDK](https://github.com/xiaoshenke/SpiderSDK) with Master/Agent mode.
 
 
-Skill Stack:
-Netty,RPC          
+### Implement
+1 build a RPC framewrok using Netty.                    
+2 build Master/Agent with the framework.                
 
-Still in developing...
+check out the project to know details~
+

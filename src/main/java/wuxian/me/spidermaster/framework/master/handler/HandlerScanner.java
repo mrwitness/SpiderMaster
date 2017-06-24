@@ -65,7 +65,7 @@ public class HandlerScanner {
                 return;
             }
 
-            IRpcRequestHandler o = (IRpcRequestHandler) constructor.newInstance(null);
+            IRpcRequestHandler o = (IRpcRequestHandler) constructor.newInstance((Object) null);
             handlerMap.put(o.getMethodName(), o);
             LogManager.info("find handler: " + clazz.getName());
 

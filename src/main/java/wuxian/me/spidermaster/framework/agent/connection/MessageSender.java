@@ -21,10 +21,9 @@ public class MessageSender {
     private Map<String, RpcRequest> requestMap = new ConcurrentHashMap<String, RpcRequest>();
     private IClient client;
 
-    //Todo: implement request timeout
-    private Map<String, Long> waitMap = new HashMap<String, Long>();
-
     private Thread dispatchThread;
+
+    private WaitNodeManager waitNodeManager;
 
     public MessageSender(@NotNull IClient client) {
 
@@ -89,10 +88,18 @@ public class MessageSender {
         };
         dispatchThread.setName("dispatchRpcRequestThread");
         dispatchThread.start();
+
+        waitNodeManager = new WaitNodeManager(new WaitNodeManager.OnNodeTimeout() {
+            @Override
+            public void onNodeTimeout(String reqId) {
+                ;
+            }
+        });
+        waitNodeManager.init();
     }
 
+    public void put(RpcRequest request, IRpcCallback onRpcReques, Long timeout) {
 
-    public void put(RpcRequest request, IRpcCallback onRpcReques) {
         if (request == null) {
             return;
         }
@@ -108,11 +115,21 @@ public class MessageSender {
         requestMap.put(request.requestId, request);
         callbackMap.put(request.requestId, onRpcReques);
 
+        if (timeout != null) {
+            //Todo:待测试
+            waitNodeManager.addWaitNode(request.requestId, timeout);
+        }
+
         if (notify) {
             synchronized (dispatchThread) {
                 dispatchThread.notifyAll();
             }
         }
+    }
+
+
+    public void put(RpcRequest request, IRpcCallback onRpcReques) {
+        put(request, onRpcReques, null);
     }
 
     public void onRpcResponse(RpcResponse response) {

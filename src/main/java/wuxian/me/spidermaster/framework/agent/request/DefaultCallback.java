@@ -28,4 +28,9 @@ public class DefaultCallback implements IRpcCallback {
     public void onResponseFail() {
 
     }
+
+    @Override
+    public void onTimeout() {
+
+    }
 }

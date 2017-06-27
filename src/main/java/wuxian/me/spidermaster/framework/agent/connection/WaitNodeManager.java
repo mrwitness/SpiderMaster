@@ -1,0 +1,55 @@
+package wuxian.me.spidermaster.framework.agent.connection;
+
+import com.sun.istack.internal.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Created by wuxian on 28/6/2017.
+ */
+public class WaitNodeManager {
+
+    //Todo: concurrent issure
+    private Map<String, Long> waitMap = new ConcurrentHashMap<String, Long>();
+    private WaitNodeThread waitNodeThread;
+
+    private OnNodeTimeout onNodeTimeout;
+
+    public WaitNodeManager() {
+        this(null);
+    }
+
+    public WaitNodeManager(@Nullable OnNodeTimeout onNodeTimeout) {
+        this.onNodeTimeout = onNodeTimeout;
+    }
+
+    public void init() {
+        waitNodeThread = new WaitNodeThread(waitMap);
+        if (this.onNodeTimeout != null) {
+            waitNodeThread.setOnTimeout(onNodeTimeout);
+        }
+
+        waitNodeThread.start();
+    }
+
+    public void addWaitNode(String requestId, long timeout) {
+
+        waitMap.put(requestId, System.currentTimeMillis() + timeout);
+        waitNodeThread.onAddNode(requestId, timeout);
+    }
+
+    public void removeWaitNode(String requestId) {
+        if (waitMap.containsKey(requestId)) {
+            long timeout = waitMap.get(requestId);
+
+            waitMap.remove(requestId);
+            waitNodeThread.onRemoveNode(requestId, timeout);
+        }
+    }
+
+    interface OnNodeTimeout {
+        void onNodeTimeout(String reqId);
+    }
+}

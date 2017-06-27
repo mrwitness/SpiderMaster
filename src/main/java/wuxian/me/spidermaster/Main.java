@@ -105,11 +105,21 @@ public class Main {
                     public void onResponseFail() {
 
                     }
+
+                    @Override
+                    public void onTimeout() {
+
+                    }
                 });
             }
 
             @Override
             public void onResponseFail() {
+
+            }
+
+            @Override
+            public void onTimeout() {
 
             }
         });

@@ -13,4 +13,6 @@ public interface IRpcCallback {
 
     void onResponseFail();
 
+    void onTimeout();
+
 }

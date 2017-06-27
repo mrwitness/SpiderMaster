@@ -107,6 +107,11 @@ public class SpiderAgent {
                             callback.onResponseFail();
                         }
                     }
+
+                    @Override
+                    public void onTimeout() {
+
+                    }
                 });
     }
 

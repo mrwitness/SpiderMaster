@@ -165,9 +165,9 @@ public class SpiderClient implements IClient {
 
     private final String registerRpc = new HeartbeatRequestProducer().produce().methodName;
 
-    //Todo
-    public void asyncSendMessage(RpcRequest request, long timeout, IRpcCallback callback) {
-        ;
+    //with timeout
+    public void asyncSendMessage(RpcRequest request, Long timeout, IRpcCallback callback) {
+        sender.put(request, callback, timeout);
     }
 
     public void asyncSendMessage(RpcRequest request, IRpcCallback callback) {

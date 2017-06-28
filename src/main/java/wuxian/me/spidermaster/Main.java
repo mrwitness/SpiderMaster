@@ -31,6 +31,7 @@ public class Main {
 
         signalManager.init();
         SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
+
             public void onSystemKilled() {
                 LogManager.info("onSystemKilled");
 
@@ -89,6 +90,15 @@ public class Main {
                 //agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
                 //agent.reportAgentStatus(StatusEnum.BLOCKED);
 
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+
+                }
+
+                agent.forDisconnect();
+
+                /*
                 agent.requestProxy(new IRpcCallback() {
                     @Override
                     public void onSent() {
@@ -111,6 +121,7 @@ public class Main {
 
                     }
                 });
+                */
             }
 
             @Override

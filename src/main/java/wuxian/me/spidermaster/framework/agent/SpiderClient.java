@@ -49,9 +49,12 @@ public class SpiderClient implements IClient {
             return;
         }
 
+        LogManager.info("SpiderClient begin to connect ip:" + serverIp + " ip:" + serverPort);
         SpiderConnector connector = new SpiderConnector(
                 serverIp, serverPort, new IConnectCallback() {
             public void onSuccess(SocketChannel channel) {
+
+                LogManager.info("SpiderClient connect success");
                 SpiderClient.this.channel = channel;  //save channel
 
                 SpiderClient.this.channel.pipeline()
@@ -65,7 +68,7 @@ public class SpiderClient implements IClient {
             public void onFail() {
 
                 connected = false;
-                onSocketClosed();
+                onSocketClosed(false);
             }
 
             public void onException() {
@@ -76,7 +79,7 @@ public class SpiderClient implements IClient {
             public void onClosed() {
                 connected = false;
 
-                onSocketClosed();
+                onSocketClosed(false);
             }
         });
         connectThread = new Thread(connector);
@@ -89,19 +92,25 @@ public class SpiderClient implements IClient {
         return connected;
     }
 
-    private void onSocketClosed() {
+    private void onSocketClosed(boolean isClient) {
         connected = false;
         if (heartbeatThread != null) {
             heartbeatThread.interrupt();
         }
-        asyncConnect(serverIp, serverPort);  //断线之后 立刻连接
+
+        sender.onForceDisconnect();
+
+        if (!isClient) {
+            asyncConnect(serverIp, serverPort);  //server主动断的 那么在断线之后 立刻进行重新连接
+        }
+
     }
 
-    //Todo:什么情况下需要客户端主动调用关闭连接？
-    public void doDisconnectFromServer() {
+
+    public void forceDisconnect() {
         channel.close().syncUninterruptibly();
 
-        onSocketClosed();
+        onSocketClosed(true);
     }
 
     public Object onReceiveMessage(RpcRequest request) {
@@ -174,7 +183,7 @@ public class SpiderClient implements IClient {
         sender.put(request, callback);
     }
 
-    public void onDisconnectByServer() {
+    public void onDisconnected() {
         connected = false;
     }
 

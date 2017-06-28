@@ -63,6 +63,10 @@ public class SpiderAgent {
         spiderClient.asyncSendMessage(rpcRequest, cb);
     }
 
+    public void forDisconnect() {
+        spiderClient.forceDisconnect();
+    }
+
     public void registerToMaster(@Nullable List<Class<?>> classList, @Nullable List<HttpUrlNode> nodeList, final IRpcCallback callback) {
         if (classList == null) {
             classList = new ArrayList<Class<?>>();

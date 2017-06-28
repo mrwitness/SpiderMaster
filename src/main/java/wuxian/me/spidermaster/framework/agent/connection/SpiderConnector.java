@@ -37,7 +37,7 @@ public class SpiderConnector implements Runnable {
 
         if (future.isCancelled()) {
             if (connectCallback != null) {
-                connectCallback.onFail();  //Todo:print cause
+                connectCallback.onFail();
             }
             return;
 

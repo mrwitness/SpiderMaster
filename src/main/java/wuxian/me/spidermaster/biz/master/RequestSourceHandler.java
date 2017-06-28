@@ -10,7 +10,7 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
 /**
  * Created by wuxian on 21/6/2017.
- *
+ * <p>
  * Todo:转移到另一个framework包下
  */
 @RpcMethodName(methodName = Requestor.REQUEST_RESROURCE)

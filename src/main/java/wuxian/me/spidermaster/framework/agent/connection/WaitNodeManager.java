@@ -4,15 +4,13 @@ import com.sun.istack.internal.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wuxian on 28/6/2017.
  */
 public class WaitNodeManager {
 
-    //Todo: concurrent issure
-    private Map<String, Long> waitMap = new ConcurrentHashMap<String, Long>();
+    private Map<String, Long> waitMap = new HashMap<String, Long>();
     private WaitNodeThread waitNodeThread;
 
     private OnNodeTimeout onNodeTimeout;
@@ -47,6 +45,9 @@ public class WaitNodeManager {
     }
 
     public void removeWaitNode(String requestId) {
+        if (requestId == null) {
+            return;
+        }
 
         Long timeout = null;
 
@@ -55,10 +56,12 @@ public class WaitNodeManager {
                 timeout = waitMap.get(requestId);
                 waitMap.remove(requestId);
             }
+
+            if (timeout != null) {
+                waitNodeThread.onRemoveNode(requestId, timeout);
+            }
         }
-        if (timeout != null) {
-            waitNodeThread.onRemoveNode(requestId, timeout);
-        }
+
     }
 
     public interface OnNodeTimeout {

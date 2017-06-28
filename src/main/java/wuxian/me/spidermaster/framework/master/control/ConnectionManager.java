@@ -11,8 +11,8 @@ import java.util.Set;
  * Created by wuxian on 18/5/2017.
  * <p>
  * 处理所有连接
- *
- * 定时清理中断心跳的connection
+ * <p>
+ * Todo:定时清理中断心跳的connection
  */
 public class ConnectionManager {
 
@@ -23,13 +23,12 @@ public class ConnectionManager {
     }
 
     public static void recordConnection(SocketChannel channel) {
-        if(channel == null) {
+        if (channel == null) {
             return;
         }
 
-        LogManager.info("ConnectionManager.recordConnection, channel: "+channel.toString());
-        if(!channelSet.contains(channel)) {
-
+        LogManager.info("ConnectionManager.recordConnection, channel: " + channel.toString());
+        if (!channelSet.contains(channel)) {
             channelSet.add(channel);
             return;
         }

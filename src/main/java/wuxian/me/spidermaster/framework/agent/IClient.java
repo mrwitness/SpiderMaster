@@ -19,7 +19,7 @@ public interface IClient {
     boolean isConnected();
 
     //主动调用disconnect
-    void doDisconnectFromServer();
+    void forceDisconnect();
 
     Object onReceiveMessage(RpcRequest request);
 
@@ -27,6 +27,7 @@ public interface IClient {
 
     void asyncSendMessage(RpcRequest request, IRpcCallback callback);
 
-    void onDisconnectByServer();
+    //Todo:被server主动关闭
+    void onDisconnected();
 
 }

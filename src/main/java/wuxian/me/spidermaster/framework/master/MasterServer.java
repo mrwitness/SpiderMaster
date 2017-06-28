@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Created by wuxian on 18/5/2017.
  */
-public class MasterServer extends ChannelInboundHandlerAdapter {
+public class MasterServer {
 
     private boolean started = false;
     private String host = null;
@@ -64,20 +64,27 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
                                     .addLast(new RpcDecoder(classList))
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AllRequestHandler(socketChannel))
-                                    .addLast(new ResponseHandler(socketChannel))
-                            //.addLast(MasterServer.this)
-                            ;
+                                    .addLast(new ResponseHandler(socketChannel));
+
+                            socketChannel.closeFuture().addListener(new ChannelFutureListener() {
+                                @Override
+                                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+
+                                    //Todo: 处理该关闭的连接...
+                                    LogManager.error("receive channel close message");
+                                }
+                            });
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
-                    .option(ChannelOption.AUTO_READ, true)   //If Not Being Set,Can't accpet to multi client!!!
+                    .option(ChannelOption.AUTO_READ, true)   //If Not Being Set,Can't accpet multi client!!!
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             LogManager.info("Master Server begin to bind port: " + port);
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
 
-            //AgentRecorder.startPrintAgentThread(); //暂时注释掉
+            AgentRecorder.startPrintAgentThread(); //暂时注释掉
 
             future.channel().closeFuture().sync();
 
@@ -91,9 +98,5 @@ public class MasterServer extends ChannelInboundHandlerAdapter {
 
     }
 
-    //Todo: handle exception
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-    }
+
 }

@@ -43,6 +43,11 @@ public class MessageSender {
         }
     }
 
+    //Todo:这时候应该暂停分发行为
+    public void onForceDisconnect() {
+        ;
+    }
+
     public void init() {
         dispatchThread = new Thread() {
             @Override
@@ -92,7 +97,9 @@ public class MessageSender {
         waitNodeManager = new WaitNodeManager(new WaitNodeManager.OnNodeTimeout() {
             @Override
             public void onNodeTimeout(String reqId) {
-                ;
+                if (callbackMap.containsKey(reqId)) {
+                    callbackMap.get(reqId).onTimeout();
+                }
             }
         });
         waitNodeManager.init();
@@ -116,7 +123,6 @@ public class MessageSender {
         callbackMap.put(request.requestId, onRpcReques);
 
         if (timeout != null) {
-            //Todo:待测试
             waitNodeManager.addWaitNode(request.requestId, timeout);
         }
 
@@ -137,11 +143,10 @@ public class MessageSender {
             return;
         }
 
-        if (!callbackMap.containsKey(response.requestId)) {
-            return;
+        waitNodeManager.removeWaitNode(response.requestId);
+
+        if (callbackMap.containsKey(response.requestId)) {
+            callbackMap.get(response.requestId).onResponseSuccess(response);
         }
-
-
-        callbackMap.get(response.requestId).onResponseSuccess(response);
     }
 }

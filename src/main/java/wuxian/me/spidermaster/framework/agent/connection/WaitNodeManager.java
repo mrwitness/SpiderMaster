@@ -36,20 +36,32 @@ public class WaitNodeManager {
 
     public void addWaitNode(String requestId, long timeout) {
 
-        waitMap.put(requestId, System.currentTimeMillis() + timeout);
-        waitNodeThread.onAddNode(requestId, timeout);
+        long wakeup = System.currentTimeMillis() + timeout;
+
+        synchronized (waitMap) {
+            waitMap.put(requestId, wakeup);
+            waitNodeThread.onAddNode(requestId, wakeup);
+        }
+
+
     }
 
     public void removeWaitNode(String requestId) {
-        if (waitMap.containsKey(requestId)) {
-            long timeout = waitMap.get(requestId);
 
-            waitMap.remove(requestId);
+        Long timeout = null;
+
+        synchronized (waitMap) {
+            if (waitMap.containsKey(requestId)) {
+                timeout = waitMap.get(requestId);
+                waitMap.remove(requestId);
+            }
+        }
+        if (timeout != null) {
             waitNodeThread.onRemoveNode(requestId, timeout);
         }
     }
 
-    interface OnNodeTimeout {
+    public interface OnNodeTimeout {
         void onNodeTimeout(String reqId);
     }
 }

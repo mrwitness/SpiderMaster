@@ -10,10 +10,10 @@ import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.NioEnv;
 import wuxian.me.spidermaster.biz.master.control.StatusEnum;
+import wuxian.me.spidermaster.framework.common.InitEnvException;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
-import wuxian.me.spidermaster.framework.common.IpPortNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class SpiderAgent {
         this.serverPort = serverPort;
 
         if (!IpPortUtil.isValidIpPort(serverIp + ":" + serverPort)) {
-            throw new IpPortNotValidException();
+            throw new InitEnvException("Ip or Port not valid");
         }
 
         spiderClient = new SpiderClient();

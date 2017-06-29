@@ -8,9 +8,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.util.IpPortUtil;
-import wuxian.me.spidermaster.framework.common.IpPortNotValidException;
-import wuxian.me.spidermaster.framework.master.control.AgentRecorder;
-import wuxian.me.spidermaster.framework.master.control.ConnectionManager;
+import wuxian.me.spidermaster.framework.common.InitEnvException;
 import wuxian.me.spidermaster.framework.master.handler.HandlerScanner;
 import wuxian.me.spidermaster.framework.rpc.RpcDecoder;
 import wuxian.me.spidermaster.framework.rpc.RpcEncoder;
@@ -22,6 +20,9 @@ import java.util.List;
 
 /**
  * Created by wuxian on 18/5/2017.
+ * Framework的职责越轻量越好。因此framework的职责：
+ * 1 管理连接
+ * 2 管理rpc handler,其他业务全部在这个框架之上进行延伸并放入biz包下,比如说转发请求能力,比如说管理agent能力。
  */
 public class MasterServer {
 
@@ -34,7 +35,7 @@ public class MasterServer {
         this.port = port;
 
         if (!IpPortUtil.isValidIpPort(host + ":" + port)) {
-            throw new IpPortNotValidException();
+            throw new InitEnvException("Ip or Port is not valid");
         }
     }
 
@@ -84,7 +85,7 @@ public class MasterServer {
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
 
-            AgentRecorder.startPrintAgentThread(); //暂时注释掉
+            //AgentRecorder.startPrintAgentThread(); //暂时注释掉 //Todo
 
             future.channel().closeFuture().sync();
 

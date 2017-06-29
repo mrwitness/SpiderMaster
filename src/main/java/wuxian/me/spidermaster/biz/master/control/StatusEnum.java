@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.common;
+package wuxian.me.spidermaster.biz.master.control;
 
 /**
  * Created by wuxian on 11/6/2017.

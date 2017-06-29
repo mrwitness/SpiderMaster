@@ -3,7 +3,6 @@ package wuxian.me.spidermaster.biz.agent;
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.model.SpiderFeature;
 import wuxian.me.spidermaster.biz.model.RegisterReqModel;
-import wuxian.me.spidermaster.framework.agent.request.BaseRequestProducer;
 import wuxian.me.spidermaster.framework.agent.request.RequestIdGen;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.common.GsonProvider;

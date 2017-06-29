@@ -1,7 +1,8 @@
-package wuxian.me.spidermaster.framework.agent.request;
+package wuxian.me.spidermaster.biz.agent;
 
 import com.sun.istack.internal.Nullable;
-import wuxian.me.spidermaster.framework.master.provider.Requestor;
+import wuxian.me.spidermaster.biz.master.provider.Requestor;
+import wuxian.me.spidermaster.framework.agent.request.IRequestProducer;
 import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
 
 /**

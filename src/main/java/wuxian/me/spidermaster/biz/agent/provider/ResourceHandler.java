@@ -1,9 +1,9 @@
-package wuxian.me.spidermaster.framework.agent.onrequest;
+package wuxian.me.spidermaster.biz.agent.provider;
 
 import wuxian.me.spidercommon.log.LogManager;
-import wuxian.me.spidermaster.framework.agent.ProviderScan;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
-import wuxian.me.spidermaster.framework.master.provider.Requestor;
+import wuxian.me.spidermaster.biz.master.provider.Requestor;
+import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
 /**

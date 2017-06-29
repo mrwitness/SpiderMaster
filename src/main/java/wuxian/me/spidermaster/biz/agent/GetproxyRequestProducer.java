@@ -1,8 +1,7 @@
 package wuxian.me.spidermaster.biz.agent;
 
-import wuxian.me.spidermaster.framework.agent.request.BaseRequestProducer;
 import wuxian.me.spidermaster.framework.agent.request.RequestIdGen;
-import wuxian.me.spidermaster.framework.master.provider.Requestor;
+import wuxian.me.spidermaster.biz.master.provider.Requestor;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
 /**

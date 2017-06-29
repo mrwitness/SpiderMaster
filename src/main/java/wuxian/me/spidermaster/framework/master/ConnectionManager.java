@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.master.control;
+package wuxian.me.spidermaster.framework.master;
 
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;

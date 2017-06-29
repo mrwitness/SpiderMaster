@@ -21,6 +21,8 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private SocketChannel channel;
 
+    //Todo:心跳属于连接的范畴 也就说,应该属于框架的能力？
+    //还是说,心跳作为一种"向你汇报我工作正常的"业务应该是业务的范畴?
     private final String heartbeat = new HeartbeatHandler().getMethodName();
 
     public AllRequestHandler(SocketChannel channel) {

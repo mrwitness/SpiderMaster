@@ -1,10 +1,9 @@
 package wuxian.me.spidermaster.biz.master;
 
 import io.netty.channel.socket.SocketChannel;
-import wuxian.me.spidercommon.log.LogManager;
-import wuxian.me.spidermaster.framework.master.control.Agent;
-import wuxian.me.spidermaster.framework.master.control.AgentRecorder;
-import wuxian.me.spidermaster.framework.common.StatusEnum;
+import wuxian.me.spidermaster.biz.master.control.Agent;
+import wuxian.me.spidermaster.biz.master.control.AgentRecorder;
+import wuxian.me.spidermaster.biz.master.control.StatusEnum;
 import wuxian.me.spidermaster.framework.master.handler.BaseRequestHandler;
 import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
 import wuxian.me.spidermaster.framework.rpc.RpcRetCode;

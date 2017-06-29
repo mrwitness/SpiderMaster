@@ -1,10 +1,9 @@
-package wuxian.me.spidermaster.framework.master.provider;
+package wuxian.me.spidermaster.biz.master.provider;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.log.LogManager;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Condition;

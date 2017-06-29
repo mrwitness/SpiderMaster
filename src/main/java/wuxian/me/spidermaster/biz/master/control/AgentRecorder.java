@@ -1,9 +1,8 @@
-package wuxian.me.spidermaster.framework.master.control;
+package wuxian.me.spidermaster.biz.master.control;
 
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
-import wuxian.me.spidermaster.framework.master.control.Agent;
-import wuxian.me.spidermaster.framework.master.provider.ProviderManager;
+import wuxian.me.spidermaster.biz.master.provider.ProviderManager;
 
 import java.util.*;
 

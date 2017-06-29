@@ -2,11 +2,9 @@ package wuxian.me.spidermaster.framework.agent;
 
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
-import wuxian.me.spidermaster.biz.agent.HeartbeatRequestProducer;
 import wuxian.me.spidermaster.framework.agent.connection.MessageSender;
 import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequest;
 import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequestHandler;
-import wuxian.me.spidermaster.framework.agent.onrequest.ResourceHandler;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.IConnectCallback;
@@ -34,7 +32,8 @@ public class SpiderClient implements IClient {
     public void init() {
         sender.init();
 
-        ResourceHandler.init();
+        //Todo:move to SpiderAgent class
+        //ResourceHandler.init();
     }
 
     public SocketChannel channel() {
@@ -133,6 +132,8 @@ public class SpiderClient implements IClient {
 
     private void startHeartbeatThread() {
 
+        //Todo:move to SpiderAgent class
+        /*
         heartbeatThread = new Thread() {
             @Override
             public void run() {
@@ -157,22 +158,26 @@ public class SpiderClient implements IClient {
 
         heartbeatThread.setName("heartbeatThread");
         heartbeatThread.start();
+        */
     }
 
     public void onRpcResponse(RpcResponse response) {
         if (sender != null) {
             sender.onRpcResponse(response);
 
+            //Todo: move to other class
+            /*
             RpcRequest req = sender.getRequestBy(response.requestId);
             if (req != null) {
                 if (req.methodName.equals(registerRpc)) { //只有注册成功了才发起心跳
                     startHeartbeatThread();
                 }
             }
+            */
         }
     }
 
-    private final String registerRpc = new HeartbeatRequestProducer().produce().methodName;
+    //private final String registerRpc = new HeartbeatRequestProducer().produce().methodName;
 
     //with timeout
     public void asyncSendMessage(RpcRequest request, Long timeout, IRpcCallback callback) {

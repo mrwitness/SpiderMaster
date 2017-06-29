@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.master.provider;
+package wuxian.me.spidermaster.biz.master.provider;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 /**
  * Created by wuxian on 21/6/2017.
  */
+@Role(role = Roles.ROLE_PROVIDER)
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Requestor {
+public @interface Provider {
 
-    String REQUEST_RESROURCE = "requestResource";
+    String provide() default "";
 
-    String request() default "";
 }

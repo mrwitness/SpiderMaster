@@ -4,14 +4,11 @@ import com.sun.istack.internal.NotNull;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
-import wuxian.me.spidermaster.framework.common.GsonProvider;
-import wuxian.me.spidermaster.framework.master.provider.Resource;
-import wuxian.me.spidermaster.framework.master.provider.ResourcePool;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 
 /**
  * Created by wuxian on 21/6/2017.
- * Rpc Response
+ * Rpc Response:
  */
 public class ResponseHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
@@ -31,10 +28,15 @@ public class ResponseHandler extends SimpleChannelInboundHandler<RpcResponse> {
         if (data == null || data.length() == 0) {
             return;
         }
+
+
+        //处理向client请求资源时可能的返回  //Todo:move to a single handler...
+        /*
         Resource resource = GsonProvider.gson().fromJson(data, Resource.class);
 
         if (resource != null) {
             ResourcePool.putResource(reqId, resource);
         }
+        */
     }
 }

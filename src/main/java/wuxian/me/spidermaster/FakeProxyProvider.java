@@ -1,8 +1,8 @@
 package wuxian.me.spidermaster;
 
 import wuxian.me.spidercommon.model.Proxy;
-import wuxian.me.spidermaster.framework.master.provider.IProvider;
-import wuxian.me.spidermaster.framework.master.provider.Provider;
+import wuxian.me.spidermaster.biz.master.provider.IProvider;
+import wuxian.me.spidermaster.biz.master.provider.Provider;
 
 /**
  * Created by wuxian on 21/6/2017.

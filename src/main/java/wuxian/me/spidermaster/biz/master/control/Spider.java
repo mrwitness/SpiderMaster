@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.common;
+package wuxian.me.spidermaster.biz.master.control;
 
 import wuxian.me.spidercommon.model.SpiderFeature;
 

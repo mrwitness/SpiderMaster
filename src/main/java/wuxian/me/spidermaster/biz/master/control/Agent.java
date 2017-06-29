@@ -1,9 +1,7 @@
-package wuxian.me.spidermaster.framework.master.control;
+package wuxian.me.spidermaster.biz.master.control;
 
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.model.Proxy;
-import wuxian.me.spidermaster.framework.common.Spider;
-import wuxian.me.spidermaster.framework.common.StatusEnum;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.master.provider;
+package wuxian.me.spidermaster.biz.master.provider;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

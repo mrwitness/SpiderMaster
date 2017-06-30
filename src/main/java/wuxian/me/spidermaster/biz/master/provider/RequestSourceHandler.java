@@ -1,5 +1,6 @@
 package wuxian.me.spidermaster.biz.master.provider;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.master.handler.BaseRequestHandler;
@@ -18,6 +19,11 @@ public class RequestSourceHandler extends BaseRequestHandler {
 
     @Override
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
+
+        ChannelHandler handler = channel.pipeline().get("resResonseHandler");
+        if (handler == null) {
+            channel.pipeline().addLast("resResonseHandler", new ResResponseHandler(channel));
+        }
 
         LogManager.info("RequestSourceHandler.handleRequest");
         String resource = request.datas;

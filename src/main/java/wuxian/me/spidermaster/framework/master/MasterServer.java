@@ -30,13 +30,20 @@ public class MasterServer {
     private String host = null;
     private int port;
 
-    public MasterServer(@NotNull String host, int port) {
+    private ServerLifecycle lifecycle = null;
+
+    public MasterServer(@NotNull String host, int port, ServerLifecycle lifecycle) {
         this.host = host;
         this.port = port;
+        this.lifecycle = lifecycle;
 
         if (!IpPortUtil.isValidIpPort(host + ":" + port)) {
             throw new InitEnvException("Ip or Port is not valid");
         }
+    }
+
+    public MasterServer(@NotNull String host, int port) {
+        this(host, port, null);
     }
 
     public void start() {
@@ -54,7 +61,7 @@ public class MasterServer {
 
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        protected void initChannel(final SocketChannel socketChannel) throws Exception {
 
                             ConnectionManager.recordConnection(socketChannel);
                             List<Class<?>> classList = new ArrayList<Class<?>>();
@@ -64,14 +71,12 @@ public class MasterServer {
                             socketChannel.pipeline()
                                     .addLast(new RpcDecoder(classList))
                                     .addLast(new RpcEncoder(classList))
-                                    .addLast(new AllRequestHandler(socketChannel))
-                                    .addLast(new ResponseHandler(socketChannel));
+                                    .addLast(new AllRequestHandler(socketChannel));
 
                             socketChannel.closeFuture().addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
-
-                                    //Todo: 处理该关闭的连接...
+                                    ConnectionManager.removeConnection(socketChannel);
                                     LogManager.error("receive channel close message");
                                 }
                             });
@@ -85,7 +90,9 @@ public class MasterServer {
             ChannelFuture future = bootstrap.bind(host, port).sync();
             LogManager.info("Bind success");
 
-            //AgentRecorder.startPrintAgentThread(); //暂时注释掉 //Todo
+            if (lifecycle != null) {
+                lifecycle.onBindSuccess(host, port);
+            }
 
             future.channel().closeFuture().sync();
 
@@ -95,9 +102,21 @@ public class MasterServer {
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
+
+            if (lifecycle != null) {
+                lifecycle.onShutdown();
+            }
         }
 
     }
 
+
+    public interface ServerLifecycle {
+
+        void onBindSuccess(String ip, int port);
+
+        void onShutdown();
+
+    }
 
 }

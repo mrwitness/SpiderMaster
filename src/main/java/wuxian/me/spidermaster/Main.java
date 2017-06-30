@@ -7,6 +7,7 @@ import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScan;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
+import wuxian.me.spidermaster.biz.master.control.AgentRecorder;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
 import wuxian.me.spidermaster.framework.master.MasterServer;
@@ -137,7 +138,17 @@ public class Main {
 
     private void startMaster() {
         LogManager.info("startMaster...");
-        new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort)
+        new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort, new MasterServer.ServerLifecycle() {
+            @Override
+            public void onBindSuccess(String ip, int port) {
+                AgentRecorder.startPrintAgentThread();
+            }
+
+            @Override
+            public void onShutdown() {
+
+            }
+        })
                 .start();
     }
 

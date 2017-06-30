@@ -10,9 +10,7 @@ import java.util.Set;
 /**
  * Created by wuxian on 18/5/2017.
  * <p>
- * 处理所有连接
- * <p>
- * Todo:定时清理中断心跳的connection
+ * 记录所有连接
  */
 public class ConnectionManager {
 
@@ -32,6 +30,28 @@ public class ConnectionManager {
             channelSet.add(channel);
             return;
         }
+    }
+
+    public static boolean removeConnection(SocketChannel channel) {
+
+        if (!containsChannel(channel)) {
+            return true;
+        }
+
+        if (channelSet.contains(channel)) {
+            channelSet.remove(channel);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean containsChannel(SocketChannel channel) {
+        if (channel == null) {
+            return false;
+        }
+
+        return channelSet.contains(channel);
     }
 
 }

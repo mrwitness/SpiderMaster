@@ -1,11 +1,10 @@
 package wuxian.me.spidermaster.framework.agent.request;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by wuxian on 11/6/2017.
- * <p>
- * 每一个client的id是独立的,因此这里没有碰撞的危险。
  */
 public class RequestIdGen {
 
@@ -14,8 +13,18 @@ public class RequestIdGen {
     private RequestIdGen() {
     }
 
-    public static long genId() {
-
-        return id.incrementAndGet();
+    public static String genId() {
+        return getIdgenPre() + "_" + id.incrementAndGet();
     }
+
+
+    public static String getIdgenPre() {
+
+        String time = String.valueOf(System.currentTimeMillis());
+        int len = time.length();
+
+        return time.substring(len - 6);
+    }
+
+
 }

@@ -1,8 +1,6 @@
 package wuxian.me.spidermaster.biz.agent.provider;
 
 import wuxian.me.spidercommon.log.LogManager;
-import wuxian.me.spidermaster.framework.agent.SpiderClient;
-import wuxian.me.spidermaster.biz.master.provider.Requestor;
 import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
@@ -11,15 +9,7 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
  */
 public class ResourceHandler implements OnRpcRequest {
 
-    private ResourceHandler() {
-    }
-
-    public static void init() {
-
-        RpcRequest rpcRequest = new RpcRequest();
-        rpcRequest.methodName = Requestor.REQUEST_RESROURCE;
-        //Todo: 优化下不用手动注册
-        SpiderClient.registerMessageNotify(rpcRequest, new ResourceHandler());
+    public ResourceHandler() {
     }
 
     @Override

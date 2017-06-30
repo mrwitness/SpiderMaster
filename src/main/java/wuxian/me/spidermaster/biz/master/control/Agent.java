@@ -90,8 +90,8 @@ public class Agent {
 
     }
 
-    //Fixme:若断线重连了 那么目前的方案就认为是另一个agent？？？
-    //Todo:解决方案是可以给它赋予一个agent id
+
+    //Todo:返回一个agent id
     @Override
     public int hashCode() {
         return channel != null ? channel.hashCode() : 0;

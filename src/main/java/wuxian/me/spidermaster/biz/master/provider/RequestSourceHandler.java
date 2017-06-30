@@ -40,10 +40,9 @@ public class RequestSourceHandler extends BaseRequestHandler {
         providerChannel.writeAndFlush(request);
         LogManager.info("wait for resource...");
 
-        ResourcePool.waitForResource(request.requestId, resource);//Todo:timeout的处理
+        ResourcePool.waitForResource(request.requestId, resource, 5000);//默认5s超时
 
-        //Fixme:分布式下有可能是同一个requestId
-        Resource res = ResourcePool.getResourceBy(request.requestId, resource);  //依然有可能为null
+        Resource res = ResourcePool.getResourceBy(request.requestId, resource);
 
         if (res == null) {
             LogManager.info("get resource fail");

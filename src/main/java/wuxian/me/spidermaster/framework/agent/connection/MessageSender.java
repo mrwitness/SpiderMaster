@@ -43,51 +43,49 @@ public class MessageSender {
         }
     }
 
-    //Todo:这时候应该暂停分发行为
-    public void onForceDisconnect() {
+    public void onConnectionClosed(boolean isClient) {
         ;
+    }
+
+    private boolean canPoll() {
+
+        if (!client.isConnected() || client.channel() == null || client.channel().isShutdown()) {
+            return false;
+        }
+
+        if (requestQueue.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
     public void init() {
         dispatchThread = new Thread() {
             @Override
             public void run() {
+
                 while (true) {
-                    while (true) {
 
-                        boolean canPoll = (client != null && client.channel() != null && !requestQueue.isEmpty());
-                        if (!canPoll) {
-                            synchronized (this) {
-                                try {
-                                    wait();
-                                } catch (InterruptedException e) {
-                                    ;
-                                }
+                    while (!canPoll()) {
+                        synchronized (this) {
+                            try {
+                                wait();
+                            } catch (InterruptedException e) {
+                                ;
                             }
-                        }
-
-                        if (client.channel().isShutdown()) {
-                            //连接被关闭：可能是远程主动关闭的,
-                            //这时候正确的处理是方式应该是由SpiderClient进行重连 直到用户kill整个进程
-                            LogManager.info("channel is shutdown...switch to wait state");
-                            synchronized (this) {
-                                try {
-                                    wait();
-                                } catch (InterruptedException e) {
-                                    ;
-                                }
-                            }
-                        }
-
-                        RpcRequest rpcRequest = requestQueue.poll();
-                        try {
-                            client.channel().writeAndFlush(rpcRequest).await();
-
-                        } catch (InterruptedException e) {
-                            LogManager.error("sender InterruptedExcepiton");
                         }
                     }
+
+                    RpcRequest rpcRequest = requestQueue.poll();
+                    try {
+                        client.channel().writeAndFlush(rpcRequest).await();
+
+                    } catch (InterruptedException e) {
+                        LogManager.error("sender InterruptedExcepiton");
+                    }
                 }
+
 
             }
         };
@@ -114,7 +112,6 @@ public class MessageSender {
         if (callbackMap.containsKey(request.requestId)) {
             return;
         }
-
 
         boolean notify = (client != null && client.channel() != null && requestQueue.isEmpty());
 

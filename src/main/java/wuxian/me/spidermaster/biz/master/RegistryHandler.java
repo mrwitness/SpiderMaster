@@ -31,7 +31,7 @@ public class RegistryHandler extends BaseRequestHandler {
         RegisterReqModel model = GsonProvider.gson().fromJson(data, RegisterReqModel.class);
 
         if (model == null) {
-            return RpcRetCode.FAIL.ordinal(); //Todo
+            return RpcRetCode.FAIL.ordinal();
         }
 
         List<SpiderFeature> featureList = model.featureList;

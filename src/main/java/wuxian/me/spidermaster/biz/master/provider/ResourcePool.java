@@ -75,6 +75,24 @@ public class ResourcePool {
         }
     }
 
+    public static void waitForResource(String reqId, String resource, long timeout) {
+        if (reqId == null || resource == null || resource.length() == 0) {
+            return;
+        }
+
+        Lock lock = getLock(reqId);
+        Condition condition = getConditionBy(lock);
+
+        lock.lock();
+        try {
+            condition.await(timeout, null);
+        } catch (InterruptedException e) {
+            ;
+        } finally {
+            lock.unlock();
+        }
+    }
+
 
     private static Condition getConditionBy(@NotNull Lock lock) {
         if (conditionMap.containsKey(lock)) {

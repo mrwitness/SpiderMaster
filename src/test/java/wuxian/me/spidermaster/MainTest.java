@@ -3,6 +3,7 @@ package wuxian.me.spidermaster;
 import org.junit.Test;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.agent.connection.WaitNodeManager;
+import wuxian.me.spidermaster.framework.agent.request.RequestIdGen;
 
 import java.util.Random;
 
@@ -12,6 +13,11 @@ import static org.junit.Assert.*;
  * Created by wuxian on 28/6/2017.
  */
 public class MainTest {
+
+    @Test
+    public void testIDGen() {
+        System.out.println(RequestIdGen.getIdgenPre());
+    }
 
     WaitNodeManager manager;
 

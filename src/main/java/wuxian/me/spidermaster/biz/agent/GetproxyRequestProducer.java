@@ -11,6 +11,8 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
  */
 @Requestor(request = "proxy")
 public class GetproxyRequestProducer extends BaseRequestProducer {
+
+
     @Override
     public RpcRequest produce() {
 

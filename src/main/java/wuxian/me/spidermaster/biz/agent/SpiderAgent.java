@@ -5,6 +5,8 @@ import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScan;
+import wuxian.me.spidermaster.biz.agent.provider.ResourceHandler;
+import wuxian.me.spidermaster.biz.master.provider.Requestor;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
@@ -20,9 +22,12 @@ import java.util.List;
 
 /**
  * Created by wuxian on 27/5/2017.
+ * using @SpiderClient to implement biz.for eg. registerToMaster,heartBeat
  */
 public class SpiderAgent {
 
+    private Thread heartbeatThread;
+    private boolean heartbeatStarted = false;
     private String serverIp;
     private int serverPort;
 
@@ -53,8 +58,49 @@ public class SpiderAgent {
     public void start() {
         NioEnv.init();
         ProviderScan.scanAndCollect();
+
+        RpcRequest rpcRequest = new RpcRequest();
+        rpcRequest.methodName = Requestor.REQUEST_RESROURCE;
+        //Todo: 优化下不用手动注册
+        SpiderClient.registerMessageNotify(rpcRequest, new ResourceHandler());
+
         spiderClient.init();
         spiderClient.asyncConnect(serverIp, serverPort);
+    }
+
+    //Todo: socket关闭时候的处理
+    private void startHeartbeatThread() {
+
+        if (heartbeatStarted) {
+            return;
+        }
+        heartbeatStarted = true;
+
+        heartbeatThread = new Thread() {
+            @Override
+            public void run() {
+
+                if (isInterrupted()) {
+                    heartbeatStarted = false;
+                    return;
+                }
+
+                while (true) {
+                    RpcRequest rpcRequest = new HeartbeatRequestProducer().produce();
+                    spiderClient.asyncSendMessage(rpcRequest, null);
+                    try {
+                        sleep(5 * 1000);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+                heartbeatStarted = false;
+            }
+        };
+
+        heartbeatThread.setName("heartbeatThread");
+        heartbeatThread.start();
+
     }
 
     public void requestProxy(IRpcCallback cb) {
@@ -87,7 +133,8 @@ public class SpiderAgent {
         }
 
 
-        RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList, ProviderScan.getProviderList()).produce();
+        RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList
+                , ProviderScan.getProviderList()).produce();
 
         spiderClient.asyncSendMessage(rpcRequest
                 , new IRpcCallback() {
@@ -98,6 +145,8 @@ public class SpiderAgent {
                     }
 
                     public void onResponseSuccess(RpcResponse response) {
+
+                        startHeartbeatThread();
 
                         if (callback != null) {
                             callback.onResponseSuccess(response);

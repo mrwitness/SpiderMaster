@@ -27,7 +27,4 @@ public interface IClient {
 
     void asyncSendMessage(RpcRequest request, IRpcCallback callback);
 
-    //Todo:被server主动关闭
-    void onDisconnected();
-
 }

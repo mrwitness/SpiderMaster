@@ -78,7 +78,6 @@ public class Main {
         node.baseUrl="hello_world";
         httpUrlNodeList.add(node);
 
-        //Todo:如何实现无侵入式装入业务
         agent.registerToMaster(classList, httpUrlNodeList, new IRpcCallback() {
             @Override
             public void onSent() {

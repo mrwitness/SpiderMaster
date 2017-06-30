@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.biz.master.provider;
+package wuxian.me.spidermaster.biz.provider;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
@@ -32,6 +32,7 @@ public class ResourcePool {
         }
 
         return resourcePool.get(reqId);
+
     }
 
     public static void putResource(String reqId, Resource resource) {

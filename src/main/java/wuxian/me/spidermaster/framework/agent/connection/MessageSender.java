@@ -78,9 +78,9 @@ public class MessageSender {
                     }
 
                     RpcRequest rpcRequest = requestQueue.poll();
+                    LogManager.info("MessageSender.send " + rpcRequest.toString());
                     try {
                         client.channel().writeAndFlush(rpcRequest).await();
-
                     } catch (InterruptedException e) {
                         LogManager.error("sender InterruptedExcepiton");
                     }

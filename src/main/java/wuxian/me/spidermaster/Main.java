@@ -7,7 +7,8 @@ import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScan;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
-import wuxian.me.spidermaster.biz.master.control.AgentRecorder;
+import wuxian.me.spidermaster.biz.control.AgentRecorder;
+import wuxian.me.spidermaster.biz.control.StatusEnum;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
 import wuxian.me.spidermaster.framework.master.MasterServer;
@@ -86,16 +87,17 @@ public class Main {
 
             @Override
             public void onResponseSuccess(RpcResponse response) {
-                //agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
-                //agent.reportAgentStatus(StatusEnum.BLOCKED);
+                agent.reportAgentStatus(StatusEnum.SWITCH_PROXY);
+                agent.reportAgentStatus(StatusEnum.BLOCKED);
 
+                /*
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
 
                 }
-
                 agent.forDisconnect();
+                */
 
                 /*
                 agent.requestProxy(new IRpcCallback() {

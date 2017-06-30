@@ -2,7 +2,7 @@ package wuxian.me.spidermaster.biz.agent;
 
 import wuxian.me.spidercommon.model.Proxy;
 import wuxian.me.spidermaster.framework.agent.request.RequestIdGen;
-import wuxian.me.spidermaster.biz.master.control.StatusEnum;
+import wuxian.me.spidermaster.biz.control.StatusEnum;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.common.GsonProvider;
 import wuxian.me.spidermaster.framework.rpc.RpcMethodName;

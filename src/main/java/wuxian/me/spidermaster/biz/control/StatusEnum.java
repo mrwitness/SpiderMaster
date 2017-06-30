@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.biz.master.control;
+package wuxian.me.spidermaster.biz.control;
 
 /**
  * Created by wuxian on 11/6/2017.

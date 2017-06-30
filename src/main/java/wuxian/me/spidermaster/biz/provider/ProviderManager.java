@@ -1,8 +1,8 @@
-package wuxian.me.spidermaster.biz.master.provider;
+package wuxian.me.spidermaster.biz.provider;
 
 import com.sun.istack.internal.Nullable;
 import io.netty.channel.socket.SocketChannel;
-import wuxian.me.spidermaster.biz.master.control.Agent;
+import wuxian.me.spidermaster.biz.control.Agent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

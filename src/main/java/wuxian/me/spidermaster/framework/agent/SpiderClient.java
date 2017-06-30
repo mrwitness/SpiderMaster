@@ -44,6 +44,7 @@ public class SpiderClient implements IClient {
 
             public void onConnectionClosed(boolean isClient) {
 
+                LogManager.info("SpiderClient.onConnectionClosed isClient:" + isClient);
                 sender.onConnectionClosed(isClient);
 
                 if (!isClient) { //若是server主动断开的 那么立即重连

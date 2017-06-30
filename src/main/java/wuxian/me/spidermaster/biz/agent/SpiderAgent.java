@@ -6,12 +6,12 @@ import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScan;
 import wuxian.me.spidermaster.biz.agent.provider.ResourceHandler;
-import wuxian.me.spidermaster.biz.master.provider.Requestor;
+import wuxian.me.spidermaster.biz.provider.Requestor;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
 import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.NioEnv;
-import wuxian.me.spidermaster.biz.master.control.StatusEnum;
+import wuxian.me.spidermaster.biz.control.StatusEnum;
 import wuxian.me.spidermaster.framework.common.InitEnvException;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
@@ -87,7 +87,7 @@ public class SpiderAgent {
 
                 while (true) {
                     RpcRequest rpcRequest = new HeartbeatRequestProducer().produce();
-                    spiderClient.asyncSendMessage(rpcRequest, null);
+                    spiderClient.asyncSendMessage(rpcRequest, DefaultCallback.ins());
                     try {
                         sleep(5 * 1000);
                     } catch (InterruptedException e) {

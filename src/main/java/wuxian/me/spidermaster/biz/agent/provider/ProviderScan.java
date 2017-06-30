@@ -3,10 +3,10 @@ package wuxian.me.spidermaster.biz.agent.provider;
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.util.ClassHelper;
-import wuxian.me.spidermaster.biz.master.provider.IProvider;
-import wuxian.me.spidermaster.biz.master.provider.Provider;
+import wuxian.me.spidermaster.biz.provider.IProvider;
+import wuxian.me.spidermaster.biz.provider.Provider;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
-import wuxian.me.spidermaster.biz.master.provider.Resource;
+import wuxian.me.spidermaster.biz.provider.Resource;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;

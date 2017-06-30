@@ -1,11 +1,11 @@
-package wuxian.me.spidermaster.biz.master.provider;
+package wuxian.me.spidermaster.biz.master;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.master.handler.BaseRequestHandler;
 import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
-import wuxian.me.spidermaster.biz.master.provider.*;
+import wuxian.me.spidermaster.biz.provider.*;
 import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
@@ -22,7 +22,7 @@ public class RequestSourceHandler extends BaseRequestHandler {
 
         ChannelHandler handler = channel.pipeline().get("resResonseHandler");
         if (handler == null) {
-            channel.pipeline().addLast("resResonseHandler", new ResResponseHandler(channel));
+            channel.pipeline().addLast("resResonseHandler", new ResResponseHandler());
         }
 
         LogManager.info("RequestSourceHandler.handleRequest");

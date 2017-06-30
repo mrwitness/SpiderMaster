@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.biz.master.control;
+package wuxian.me.spidermaster.biz.control;
 
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.model.Proxy;

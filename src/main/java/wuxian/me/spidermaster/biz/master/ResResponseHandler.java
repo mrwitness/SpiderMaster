@@ -1,9 +1,11 @@
-package wuxian.me.spidermaster.biz.master.provider;
+package wuxian.me.spidermaster.biz.master;
 
 import com.sun.istack.internal.NotNull;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
+import wuxian.me.spidermaster.biz.provider.Resource;
+import wuxian.me.spidermaster.biz.provider.ResourcePool;
 import wuxian.me.spidermaster.framework.common.GsonProvider;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 
@@ -13,12 +15,6 @@ import wuxian.me.spidermaster.framework.rpc.RpcResponse;
  * after agent response with source-xx,this handler will be notified.
  */
 public class ResResponseHandler extends SimpleChannelInboundHandler<RpcResponse> {
-
-    private SocketChannel channel;
-
-    public ResResponseHandler(@NotNull SocketChannel channel) {
-        this.channel = channel;
-    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext

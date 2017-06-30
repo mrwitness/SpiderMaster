@@ -46,6 +46,8 @@ public class HandlerScanner {
 
     private static void performCheckAndCollect(Class clazz) {
 
+        LogManager.info("HandlerScanner.check " + clazz.getName());
+
         if (Modifier.isAbstract(clazz.getModifiers())) {
             return;
         }

@@ -24,4 +24,8 @@ public abstract class BaseRequestHandler implements IRpcRequestHandler {
 
         return method;
     }
+
+    public boolean needResponse() {
+        return true;
+    }
 }

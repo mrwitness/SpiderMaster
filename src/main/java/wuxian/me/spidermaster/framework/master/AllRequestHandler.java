@@ -5,7 +5,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
-import wuxian.me.spidermaster.biz.master.HeartbeatHandler;
 import wuxian.me.spidermaster.framework.master.handler.HandlerScanner;
 import wuxian.me.spidermaster.framework.master.handler.IRpcRequestHandler;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
@@ -21,30 +20,16 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private SocketChannel channel;
 
-    //Todo:心跳属于连接的范畴 也就说,应该属于框架的能力？
-    //还是说,心跳作为一种"向你汇报我工作正常的"业务应该是业务的范畴?
-    private final String heartbeat = new HeartbeatHandler().getMethodName();
-
     public AllRequestHandler(SocketChannel channel) {
         this.channel = channel;
     }
 
-    private boolean dealIfHeartbeat(String name) {
-        if (name != null && heartbeat.equals(name)) {
-            return true;
-        }
-        return false;
-    }
-
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcRequest request) throws Exception {
+
+        boolean needResponse = true;
 
         RpcResponse response = new RpcResponse();
         response.requestId = request.requestId;
-
-        if (dealIfHeartbeat(request.methodName)) {
-            LogManager.info("heartbeat,ignore");
-            return;
-        }
 
         IRpcRequestHandler handler = HandlerScanner.findHandlerBy(request.methodName);
         if (handler != null) {
@@ -55,6 +40,8 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
                 response.result = ret;
                 response.retCode = RpcRetCode.SUCCESS.ordinal();
 
+                needResponse = handler.needResponse();  //其实只有heartbeat无需response。
+
             } catch (HandlerExcepiton e) {
                 response.retCode = RpcRetCode.FAIL.ordinal();
             }
@@ -63,6 +50,9 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
             response.retCode = RpcRetCode.FAIL.ordinal(); //Todo:设计一些错误返回码
         }
 
-        channelHandlerContext.writeAndFlush(response);
+        if (needResponse) {
+            channelHandlerContext.writeAndFlush(response);
+        }
+
     }
 }

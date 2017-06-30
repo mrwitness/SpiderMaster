@@ -11,4 +11,6 @@ public interface IRpcRequestHandler {
     Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton;
 
     String getMethodName();
+
+    boolean needResponse();
 }

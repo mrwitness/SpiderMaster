@@ -10,7 +10,7 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 
 /**
  * Created by wuxian on 11/6/2017.
- * Todo:
+ * Todo: agent保活
  */
 
 @RpcMethodName(methodName = "heartbeat")
@@ -19,5 +19,9 @@ public class HeartbeatHandler extends BaseRequestHandler {
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
         return RpcRetCode.SUCCESS.ordinal();
+    }
+
+    public boolean needResponse() {
+        return false;
     }
 }

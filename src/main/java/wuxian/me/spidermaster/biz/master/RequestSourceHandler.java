@@ -3,6 +3,7 @@ package wuxian.me.spidermaster.biz.master;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
+import wuxian.me.spidermaster.framework.common.GsonProvider;
 import wuxian.me.spidermaster.framework.master.handler.BaseRequestHandler;
 import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
 import wuxian.me.spidermaster.biz.provider.*;
@@ -19,11 +20,6 @@ public class RequestSourceHandler extends BaseRequestHandler {
 
     @Override
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
-
-        ChannelHandler handler = channel.pipeline().get("resResonseHandler");
-        if (handler == null) {
-            channel.pipeline().addLast("resResonseHandler", new ResResponseHandler());
-        }
 
         LogManager.info("RequestSourceHandler.handleRequest");
         String resource = request.datas;
@@ -46,9 +42,11 @@ public class RequestSourceHandler extends BaseRequestHandler {
 
         if (res == null) {
             LogManager.info("get resource fail");
+
+            return null;
         } else {
             LogManager.info("get resource: " + res.toString());
         }
-        return res;
+        return GsonProvider.gson().toJson(res);  //currently must be convert to Spring which should be Fixme!
     }
 }

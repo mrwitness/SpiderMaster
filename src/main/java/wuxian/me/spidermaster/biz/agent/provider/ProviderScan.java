@@ -87,7 +87,7 @@ public class ProviderScan {
         boolean invokeSuccess = false;
 
         try {
-            provider = (IProvider) constructor.newInstance((Object) null);
+            provider = (IProvider) constructor.newInstance(null); //for java6
 
             clazz.asSubclass(IProvider.class);
 
@@ -146,7 +146,7 @@ public class ProviderScan {
         }
 
         try {
-            Object o = method.invoke(provider, (Object) null);
+            Object o = method.invoke(provider, null);
 
             Resource resource = new Resource();
             resource.name = name;

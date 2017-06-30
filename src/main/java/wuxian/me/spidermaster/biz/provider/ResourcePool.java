@@ -86,7 +86,7 @@ public class ResourcePool {
 
         lock.lock();
         try {
-            condition.await(timeout, null);
+            condition.await();  //Fixme: implement timeout
         } catch (InterruptedException e) {
             ;
         } finally {

@@ -13,4 +13,11 @@ public class RegisterReqModel {
 
     public List<String> providerList;
 
+    @Override
+    public String toString() {
+        return "RegisterReqModel{" +
+                "featureList=" + featureList +
+                ", providerList=" + providerList +
+                '}';
+    }
 }

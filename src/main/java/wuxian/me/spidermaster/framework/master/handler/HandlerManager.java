@@ -17,15 +17,15 @@ import java.util.Set;
 /**
  * Created by wuxian on 20/6/2017.
  */
-public class HandlerScanner {
+public class HandlerManager {
 
     private static Map<String, IRpcRequestHandler> handlerMap = new HashMap<String, IRpcRequestHandler>();
 
-    private HandlerScanner() {
+    private HandlerManager() {
     }
 
 
-    public static void scanAndCollect() {
+    public static void scanAndCollectHandlers() throws InitEnvException {
 
         String pack = SpiderConfig.bizScan;
         if (pack == null || pack.length() == 0) {
@@ -36,7 +36,7 @@ public class HandlerScanner {
             Set<Class<?>> classSet = ClassHelper.getClasses(pack);
 
             for (Class clazz : classSet) {
-                performCheckAndCollect(clazz);
+                checkAndCollect(clazz);
             }
         } catch (IOException e) {
             ;
@@ -44,9 +44,9 @@ public class HandlerScanner {
 
     }
 
-    private static void performCheckAndCollect(Class clazz) {
+    private static void checkAndCollect(Class clazz) {
 
-        LogManager.info("HandlerScanner.check " + clazz.getName());
+        LogManager.info("HandlerManager.check " + clazz.getName());
 
         if (Modifier.isAbstract(clazz.getModifiers())) {
             return;

@@ -34,8 +34,10 @@ public class ProviderManager {
         return providerMap.get(provider);
     }
 
+    //Todo:目前该函数只返回一个channel,其实应该是返回一个list
     @Nullable
     public static SocketChannel findProviderChannel(String provider) {
+
         Agent agent = findProvider(provider);
         if (agent == null) {
             return null;

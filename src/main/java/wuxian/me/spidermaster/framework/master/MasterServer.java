@@ -9,7 +9,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.framework.common.InitEnvException;
-import wuxian.me.spidermaster.framework.master.handler.HandlerScanner;
+import wuxian.me.spidermaster.framework.master.handler.HandlerManager;
 import wuxian.me.spidermaster.framework.rpc.RpcDecoder;
 import wuxian.me.spidermaster.framework.rpc.RpcEncoder;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
@@ -51,7 +51,7 @@ public class MasterServer {
             return;
         }
         started = true;
-        HandlerScanner.scanAndCollect();
+        HandlerManager.scanAndCollectHandlers();
 
         EventLoopGroup boss = new NioEventLoopGroup(10);
         EventLoopGroup worker = new NioEventLoopGroup(10);

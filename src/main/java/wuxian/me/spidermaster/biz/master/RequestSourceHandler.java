@@ -1,9 +1,9 @@
 package wuxian.me.spidermaster.biz.master;
 
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.common.GsonProvider;
+import wuxian.me.spidermaster.framework.master.ConnectionManager;
 import wuxian.me.spidermaster.framework.master.handler.BaseRequestHandler;
 import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
 import wuxian.me.spidermaster.biz.provider.*;
@@ -32,13 +32,17 @@ public class RequestSourceHandler extends BaseRequestHandler {
             return null;
         }
 
+        if (!ConnectionManager.containsChannel(providerChannel)) {  //连接已失效
+            return null;
+        }
+
         LogManager.info("find channel: " + providerChannel.toString() + " who will handle the source request");
         providerChannel.writeAndFlush(request);
         LogManager.info("wait for resource...");
 
         ResourcePool.waitForResource(request.requestId, resource, 5000);//默认5s超时
 
-        Resource res = ResourcePool.getResourceBy(request.requestId, resource);
+        Resource res = ResourcePool.getResource(request.requestId, resource);
 
         if (res == null) {
             LogManager.info("get resource fail");
@@ -47,6 +51,6 @@ public class RequestSourceHandler extends BaseRequestHandler {
         } else {
             LogManager.info("get resource: " + res.toString());
         }
-        return GsonProvider.gson().toJson(res);  //currently must be convert to Spring which should be Fixme!
+        return GsonProvider.gson().toJson(res);  //currently must be convert to String(because of Gson.toJson) which should be Fixme!
     }
 }

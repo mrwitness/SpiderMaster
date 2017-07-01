@@ -17,6 +17,7 @@ public class SpiderConnector implements Runnable {
     private String host;
     private int port;
     private SocketChannel socketChannel;
+
     private Thread connectionThread = null;
     private AtomicBoolean connected = new AtomicBoolean(false);
     private AtomicBoolean isConnecting = new AtomicBoolean(false);
@@ -71,6 +72,8 @@ public class SpiderConnector implements Runnable {
     }
 
     public void run() {
+        clientClose = false;
+
         Bootstrap bootstrap = NioEnv.getAgentBootstrap(new NioEnv.OnChannelInit() {
             @Override
             public void onChannelInit(SocketChannel channel) {
@@ -115,8 +118,6 @@ public class SpiderConnector implements Runnable {
         for (ConnectionLifecycle connectCallback : connectCallbackList) {
             connectCallback.onConnectionClosed(clientClose);
         }
-        clientClose = false; //reinit
-
         LogManager.info("SpiderConnector.closed");
     }
 

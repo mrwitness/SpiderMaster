@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by wuxian on 21/6/2017.
  */
-public class ProviderScan {
+public class ProviderScanner {
 
     private static Map<String, IProvider> providerMap = new ConcurrentHashMap<String, IProvider>();
 
@@ -35,7 +35,7 @@ public class ProviderScan {
         return list;
     }
 
-    public static void scanAndCollect() {
+    public static void scanAndCollectProviders() {
 
         String pack = SpiderConfig.providerScan;
 

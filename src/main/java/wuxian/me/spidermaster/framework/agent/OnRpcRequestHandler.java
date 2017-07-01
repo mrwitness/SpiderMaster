@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.framework.agent.onrequest;
+package wuxian.me.spidermaster.framework.agent;
 
 import com.sun.istack.internal.NotNull;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,6 +22,7 @@ public class OnRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest>
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext
             , RpcRequest request) throws Exception {
+
         Object o = this.client.onReceiveMessage(request);
 
         RpcResponse response = new RpcResponse();

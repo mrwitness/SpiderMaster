@@ -3,14 +3,10 @@ package wuxian.me.spidermaster.framework.master;
 import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by wuxian on 18/5/2017.
- * <p>
- * 记录所有连接
  */
 public class ConnectionManager {
 
@@ -28,6 +24,11 @@ public class ConnectionManager {
         LogManager.info("ConnectionManager.recordConnection, channel: " + channel.toString());
         if (!channelSet.contains(channel)) {
             channelSet.add(channel);
+
+            for (ConnectionsCallback cb : callbackList) {
+                cb.onConnAdd(channel);
+            }
+
             return;
         }
     }
@@ -40,6 +41,11 @@ public class ConnectionManager {
 
         if (channelSet.contains(channel)) {
             channelSet.remove(channel);
+
+            for (ConnectionsCallback cb : callbackList) {
+                cb.onConnRemove(channel);
+            }
+
             return true;
         }
 
@@ -54,4 +60,25 @@ public class ConnectionManager {
         return channelSet.contains(channel);
     }
 
+    private static List<ConnectionsCallback> callbackList = new ArrayList<ConnectionsCallback>();
+
+    public static void addCallback(ConnectionsCallback cb) {
+
+        if (cb != null && !callbackList.contains(cb)) {
+            callbackList.add(cb);
+        }
+    }
+
+    public static void removeCallback(ConnectionsCallback cb) {
+        if (cb != null && callbackList.contains(cb)) {
+            callbackList.remove(cb);
+        }
+    }
+
+    public interface ConnectionsCallback {
+
+        void onConnAdd(SocketChannel channel);
+
+        void onConnRemove(SocketChannel channel);
+    }
 }

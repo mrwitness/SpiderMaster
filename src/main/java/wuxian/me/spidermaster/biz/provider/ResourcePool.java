@@ -6,6 +6,7 @@ import wuxian.me.spidercommon.log.LogManager;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,7 +26,7 @@ public class ResourcePool {
     private static Map<Lock, Condition> conditionMap = new ConcurrentHashMap<Lock, Condition>();
 
     @Nullable
-    public static Resource getResourceBy(String reqId, String resource) {
+    public static Resource getResource(String reqId, String resource) {
 
         if (reqId == null || resource == null || !resourcePool.containsKey(reqId)) {
             return null;
@@ -53,8 +54,6 @@ public class ResourcePool {
         } finally {
             lock.unlock();
         }
-
-
 
     }
 
@@ -86,7 +85,7 @@ public class ResourcePool {
 
         lock.lock();
         try {
-            condition.await();  //Fixme: implement timeout
+            condition.await(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             ;
         } finally {

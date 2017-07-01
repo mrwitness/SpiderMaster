@@ -5,17 +5,10 @@ import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 /**
  * Created by wuxian on 17/6/2017.
  */
-public class DefaultCallback implements IRpcCallback {
+public class BaseRpcCallback implements IRpcCallback {
 
-    private static DefaultCallback callback = new DefaultCallback();
-
-    private DefaultCallback() {
+    public BaseRpcCallback() {
     }
-
-    public static DefaultCallback ins() {
-        return callback;
-    }
-
 
     public void onSent() {
 

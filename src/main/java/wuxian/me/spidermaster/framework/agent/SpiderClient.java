@@ -4,11 +4,11 @@ import io.netty.channel.socket.SocketChannel;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.agent.connection.BaseConnectionLifecycle;
 import wuxian.me.spidermaster.framework.agent.connection.MessageSender;
-import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequest;
-import wuxian.me.spidermaster.framework.agent.onrequest.OnRpcRequestHandler;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.SpiderConnector;
 import wuxian.me.spidermaster.framework.agent.request.RpcResponseHandler;
+import wuxian.me.spidermaster.framework.master.handler.HandlerExcepiton;
+import wuxian.me.spidermaster.framework.master.handler.IRpcRequestHandler;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
 
@@ -86,10 +86,14 @@ public class SpiderClient implements IClient {
             return null;
         }
 
-        OnRpcRequest onRpcRequest = requestMap.get(request.methodName);
+        IRpcRequestHandler onRpcRequest = requestMap.get(request.methodName);
         LogManager.info("find handler: " + onRpcRequest.toString());
 
-        return onRpcRequest.onRpcRequest(request);
+        try {
+            return onRpcRequest.handleRequest(request, null);
+        } catch (HandlerExcepiton e) {
+            return null;
+        }
 
     }
 
@@ -108,17 +112,26 @@ public class SpiderClient implements IClient {
         sender.put(request, callback);
     }
 
-    private static Map<String, OnRpcRequest> requestMap = new HashMap<String, OnRpcRequest>();
+    private static Map<String, IRpcRequestHandler> requestMap = new HashMap<String, IRpcRequestHandler>();
 
-    public static void registerMessageNotify(RpcRequest request, OnRpcRequest onRpcRequest) {
+    public static void registerRpcHandler(RpcRequest request, IRpcRequestHandler onRpcRequest) {
         if (request == null || onRpcRequest == null) {
             return;
         }
 
-        if (requestMap.containsKey(request.methodName)) {
+        registerRpcHandler(request.methodName, onRpcRequest);
+    }
+
+    public static void registerRpcHandler(String method, IRpcRequestHandler onRpcRequest) {
+
+        if (method == null || method.length() == 0 || onRpcRequest == null) {
             return;
         }
-        requestMap.put(request.methodName, onRpcRequest);
+
+        if (requestMap.containsKey(method)) {
+            return;
+        }
+        requestMap.put(method, onRpcRequest);
     }
 
 }

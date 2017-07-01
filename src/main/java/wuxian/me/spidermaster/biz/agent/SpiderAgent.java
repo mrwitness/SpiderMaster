@@ -4,11 +4,10 @@ import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
-import wuxian.me.spidermaster.biz.agent.provider.ProviderScan;
+import wuxian.me.spidermaster.biz.agent.provider.ProviderScanner;
 import wuxian.me.spidermaster.biz.agent.provider.ResourceHandler;
 import wuxian.me.spidermaster.biz.provider.Requestor;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
-import wuxian.me.spidermaster.framework.agent.request.DefaultCallback;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.NioEnv;
 import wuxian.me.spidermaster.biz.control.StatusEnum;
@@ -57,12 +56,9 @@ public class SpiderAgent {
 
     public void start() {
         NioEnv.init();
-        ProviderScan.scanAndCollect();
+        ProviderScanner.scanAndCollectProviders();
 
-        RpcRequest rpcRequest = new RpcRequest();
-        rpcRequest.methodName = Requestor.REQUEST_RESROURCE;
-        //Todo: 优化下不用手动注册
-        SpiderClient.registerMessageNotify(rpcRequest, new ResourceHandler());
+        SpiderClient.registerRpcHandler(Requestor.REQUEST_RESROURCE, new ResourceHandler());
 
         spiderClient.init();
         spiderClient.asyncConnect(serverIp, serverPort);
@@ -87,7 +83,7 @@ public class SpiderAgent {
 
                 while (true) {
                     RpcRequest rpcRequest = new HeartbeatRequestProducer().produce();
-                    spiderClient.asyncSendMessage(rpcRequest, DefaultCallback.ins());
+                    spiderClient.asyncSendMessage(rpcRequest, null);
                     try {
                         sleep(5 * 1000);
                     } catch (InterruptedException e) {
@@ -134,7 +130,7 @@ public class SpiderAgent {
 
 
         RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList
-                , ProviderScan.getProviderList()).produce();
+                , ProviderScanner.getProviderList()).produce();
 
         spiderClient.asyncSendMessage(rpcRequest
                 , new IRpcCallback() {
@@ -175,6 +171,6 @@ public class SpiderAgent {
     public void reportAgentStatus(StatusEnum statusEnum) {
         RpcRequest rpcRequest = new ReportStatusRequestProducer(statusEnum).produce();
 
-        spiderClient.asyncSendMessage(rpcRequest, DefaultCallback.ins());
+        spiderClient.asyncSendMessage(rpcRequest, null);
     }
 }

@@ -2,6 +2,7 @@ package wuxian.me.spidermaster.framework.agent.connection;
 
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.agent.IClient;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
@@ -103,7 +104,7 @@ public class MessageSender {
         waitNodeManager.init();
     }
 
-    public void put(RpcRequest request, IRpcCallback onRpcReques, Long timeout) {
+    public void put(RpcRequest request, @Nullable IRpcCallback onRpcReques, Long timeout) {
 
         if (request == null) {
             return;
@@ -117,7 +118,12 @@ public class MessageSender {
 
         requestQueue.add(request);
         requestMap.put(request.requestId, request);
-        callbackMap.put(request.requestId, onRpcReques);
+
+        if (onRpcReques != null) {
+
+            callbackMap.put(request.requestId, onRpcReques);
+
+        }
 
         if (timeout != null) {
             waitNodeManager.addWaitNode(request.requestId, timeout);
@@ -131,7 +137,7 @@ public class MessageSender {
     }
 
 
-    public void put(RpcRequest request, IRpcCallback onRpcReques) {
+    public void put(RpcRequest request, @Nullable IRpcCallback onRpcReques) {
         put(request, onRpcReques, null);
     }
 

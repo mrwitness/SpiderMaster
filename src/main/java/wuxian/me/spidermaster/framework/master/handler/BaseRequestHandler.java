@@ -1,6 +1,5 @@
 package wuxian.me.spidermaster.framework.master.handler;
 
-
 import wuxian.me.spidermaster.framework.rpc.RpcMethodName;
 
 /**
@@ -18,7 +17,7 @@ public abstract class BaseRequestHandler implements IRpcRequestHandler {
         }
 
         String method = annotation.methodName();
-        if (method == null) {  //not valid
+        if (method == null) {
             return "";
         }
 

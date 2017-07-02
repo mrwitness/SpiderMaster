@@ -26,7 +26,7 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcRequest request) throws Exception {
 
-        LogManager.info("RPC Request received, " + request.toString());
+        LogManager.info("RPC Request received --> " + request.toString());
         boolean needResponse = true;
 
         RpcResponse response = new RpcResponse();

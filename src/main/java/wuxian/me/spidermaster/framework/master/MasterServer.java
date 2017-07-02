@@ -69,11 +69,11 @@ public class MasterServer {
                             ConnectionManager.recordConnection(socketChannel);
 
                             List<Class<?>> classList = new ArrayList<Class<?>>();
-                            classList.add(RpcResponse.class);
                             classList.add(RpcRequest.class);
+                            classList.add(RpcResponse.class);
 
                             socketChannel.pipeline()
-                                    .addLast(new RpcDecoder(classList))
+                                    .addLast(new RpcDecoder(classList))  //Fixme:这里的解析器组有点问题
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AllRequestHandler(socketChannel));
 

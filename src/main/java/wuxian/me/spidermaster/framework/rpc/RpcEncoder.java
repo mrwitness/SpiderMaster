@@ -9,6 +9,7 @@ import wuxian.me.spidercommon.log.LogManager;
 import java.util.ArrayList;
 import java.util.List;
 
+//Todo: 实现的有bug
 public class RpcEncoder extends MessageToByteEncoder {
 
     private Class<?> genericClass;
@@ -41,12 +42,14 @@ public class RpcEncoder extends MessageToByteEncoder {
     @Override
     public void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) throws Exception {
 
+        //LogManager.info("RpcEncoder.encode: "+in.toString());
         for (Class<?> claz : classList) { //支持多种encoder
             if (claz.isInstance(in)) {
                 byte[] data = SerializationUtil.serialize(in);
                 out.writeInt(data.length);
                 out.writeBytes(data);
-                break;
+                //LogManager.info("encode with "+claz.getSimpleName());
+                return;
             }
         }
 

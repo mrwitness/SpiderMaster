@@ -2,15 +2,18 @@ package wuxian.me.spidermaster.biz.agent;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import com.sun.tools.internal.ws.processor.model.Response;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScanner;
 import wuxian.me.spidermaster.biz.agent.provider.ResourceHandler;
 import wuxian.me.spidermaster.biz.provider.Requestor;
+import wuxian.me.spidermaster.biz.provider.Resource;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.NioEnv;
 import wuxian.me.spidermaster.biz.control.StatusEnum;
+import wuxian.me.spidermaster.framework.common.GsonProvider;
 import wuxian.me.spidermaster.framework.common.InitEnvException;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 import wuxian.me.spidermaster.framework.rpc.RpcResponse;
@@ -85,7 +88,7 @@ public class SpiderAgent {
                     RpcRequest rpcRequest = new HeartbeatRequestProducer().produce();
                     spiderClient.asyncSendMessage(rpcRequest, null);
                     try {
-                        sleep(5 * 1000);
+                        sleep(20 * 1000);
                     } catch (InterruptedException e) {
                         break;
                     }
@@ -100,7 +103,20 @@ public class SpiderAgent {
     }
 
     public void requestProxy(IRpcCallback cb) {
-        RpcRequest rpcRequest = new GetproxyRequestProducer().produce();
+
+        GetproxyRequestProducer producer = new GetproxyRequestProducer();
+        RpcRequest rpcRequest = producer.produce();
+
+        Resource resource = ProviderScanner.provideResource(producer.getRequestResourceName());
+
+        if (resource != null) {  //若本身具备响应proxy的能力,那么就不用发送rpc请求了
+            RpcResponse response = new RpcResponse();
+            response.requestId = rpcRequest.requestId;
+            response.result = GsonProvider.gson().toJson(resource);
+            cb.onResponseSuccess(response);
+            return;
+        }
+
         spiderClient.asyncSendMessage(rpcRequest, cb);
     }
 
@@ -108,7 +124,8 @@ public class SpiderAgent {
         spiderClient.forceDisconnect();
     }
 
-    public void registerToMaster(@Nullable List<Class<?>> classList, @Nullable List<HttpUrlNode> nodeList, final IRpcCallback callback) {
+    public void registerToMaster(@Nullable List<Class<?>> classList,
+                                 @Nullable List<HttpUrlNode> nodeList, final IRpcCallback callback) {
         if (classList == null) {
             classList = new ArrayList<Class<?>>();
         }

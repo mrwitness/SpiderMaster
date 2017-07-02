@@ -29,14 +29,6 @@ public class Main {
         ShellUtil.init();
 
         signalManager.init();
-        SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
-
-            public void onSystemKilled() {
-                LogManager.info("onSystemKilled");
-
-                ShellUtil.killProcessBy(ProcessUtil.getCurrentProcessId());
-            }
-        });
 
         if (SpiderConfig.spiderMode == 0) {
             startAgent();
@@ -45,6 +37,15 @@ public class Main {
             startMaster();
 
         }
+
+        SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
+
+            public void onSystemKilled() {
+                LogManager.info("onSystemKilled");
+
+                ShellUtil.killProcessBy(ProcessUtil.getCurrentProcessId());
+            }
+        });
     }
 
     private void startAgent() {
@@ -54,6 +55,13 @@ public class Main {
 
         final SpiderAgent agent = new SpiderAgent();
         agent.start();
+
+        SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
+            @Override
+            public void onSystemKilled() {
+                agent.forDisconnect();
+            }
+        });
 
         List<Class<?>> classList = new ArrayList<Class<?>>(1);
         classList.add(Main.class);
@@ -90,7 +98,8 @@ public class Main {
 
     private void startMaster() {
         LogManager.info("startMaster...");
-        new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort, new MasterServer.ServerLifecycle() {
+
+        final MasterServer server = new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort, new MasterServer.ServerLifecycle() {
             @Override
             public void onBindSuccess(String ip, int port) {
                 AgentRecorder.startPrintThread();
@@ -100,7 +109,17 @@ public class Main {
             public void onShutdown() {
 
             }
-        }).start();
+        });
+
+        SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
+            @Override
+            public void onSystemKilled() {
+                server.forceClose();
+            }
+        });
+
+        server.start();
+
     }
 
 

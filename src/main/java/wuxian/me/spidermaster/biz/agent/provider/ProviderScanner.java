@@ -136,7 +136,12 @@ public class ProviderScanner {
         return methodMap.get(name);
     }
 
+    @Nullable
     public static Resource provideResource(String name) {
+
+        if (name == null || name.length() == 0) {
+            return null;
+        }
 
         IProvider provider = getProviderIns(name);
         Method method = getMethod(name);

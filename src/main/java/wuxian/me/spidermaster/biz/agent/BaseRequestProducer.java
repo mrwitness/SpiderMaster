@@ -31,7 +31,7 @@ public abstract class BaseRequestProducer implements IRequestProducer {
     }
 
     @Nullable
-    protected final String getRequestResourceName() {
+    public final String getRequestResourceName() {
         Requestor requestor = (getClass()).getAnnotation(Requestor.class);
         if (requestor != null) {
             return requestor.request();

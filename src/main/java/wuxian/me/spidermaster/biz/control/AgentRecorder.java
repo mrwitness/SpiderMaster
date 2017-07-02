@@ -15,7 +15,7 @@ import static java.lang.Thread.sleep;
  */
 public class AgentRecorder implements Runnable {
 
-    private static long PRINT_INTERVAL = 1000 * 20;  //20s
+    private static long PRINT_INTERVAL = 1000 * 30;  //30s
 
     private static Set<Agent> agentSet = new HashSet<Agent>();
 

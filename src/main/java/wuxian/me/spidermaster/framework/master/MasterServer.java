@@ -94,6 +94,7 @@ public class MasterServer {
                 lifecycle.onBindSuccess(host, port);
             }
 
+            serverSocket = future.channel();
             future.channel().closeFuture().sync();
 
             LogManager.info("MasterServer Socket closed");
@@ -107,6 +108,18 @@ public class MasterServer {
                 lifecycle.onShutdown();
             }
         }
+
+    }
+
+    Channel serverSocket = null;
+
+    public void forceClose() {
+
+        LogManager.info("MasterServer.forceClose");
+        if (serverSocket != null) {
+            serverSocket.close().syncUninterruptibly();
+        }
+        LogManager.info("Server.close success");
 
     }
 

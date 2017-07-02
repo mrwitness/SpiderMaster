@@ -1,6 +1,7 @@
 package wuxian.me.spidermaster.biz.master;
 
 import io.netty.channel.socket.SocketChannel;
+import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.biz.control.Agent;
 import wuxian.me.spidermaster.biz.control.AgentRecorder;
 import wuxian.me.spidermaster.biz.control.StatusEnum;
@@ -18,6 +19,9 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
 public class ReportStatusHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
+
+        LogManager.info("in ReportStatus.handleRequest");
+
         Agent agent = AgentRecorder.findByChannel(channel);
 
         if (agent != null) {

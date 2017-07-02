@@ -19,6 +19,7 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext,
                                 RpcResponse rpcResponse) throws Exception {
+        LogManager.info("RPC Response received: " + rpcResponse.toString());
         if (client == null) {
             return;
         }

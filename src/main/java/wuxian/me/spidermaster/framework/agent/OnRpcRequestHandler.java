@@ -3,6 +3,7 @@ package wuxian.me.spidermaster.framework.agent;
 import com.sun.istack.internal.NotNull;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidermaster.framework.agent.IClient;
 import wuxian.me.spidermaster.framework.common.GsonProvider;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
@@ -23,6 +24,8 @@ public class OnRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest>
     protected void channelRead0(ChannelHandlerContext channelHandlerContext
             , RpcRequest request) throws Exception {
 
+        LogManager.info("RPC Request received: " + request.methodName);
+
         Object o = this.client.onReceiveMessage(request);
 
         RpcResponse response = new RpcResponse();
@@ -34,6 +37,7 @@ public class OnRpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest>
         }
         response.result = o;
 
+        LogManager.info("RPC Response send: " + response.toString());
         channelHandlerContext.writeAndFlush(response);
     }
 }

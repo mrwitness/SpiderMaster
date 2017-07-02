@@ -1,6 +1,7 @@
 package wuxian.me.spidermaster.framework.agent.connection;
 
 import com.sun.istack.internal.Nullable;
+import wuxian.me.spidercommon.log.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class WaitNodeManager {
             waitNodeThread.setOnTimeout(onNodeTimeout);
         }
 
+        LogManager.info("start wait node thread");
         waitNodeThread.start();
     }
 

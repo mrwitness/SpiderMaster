@@ -21,7 +21,7 @@ public class RequestSourceHandler extends BaseRequestHandler {
     @Override
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
-        LogManager.info("RequestSourceHandler.handleRequest");
+        LogManager.info("in RequestSourceHandler.handleRequest");
         String resource = request.datas;
         if (resource == null || resource.length() == 0) {
             return null;
@@ -36,9 +36,8 @@ public class RequestSourceHandler extends BaseRequestHandler {
             return null;
         }
 
-        LogManager.info("find channel: " + providerChannel.toString() + " who will handle the source request");
         providerChannel.writeAndFlush(request);
-        LogManager.info("wait for resource...");
+        LogManager.info("wait for resource: " + resource);
 
         ResourcePool.waitForResource(request.requestId, resource, 5000);//默认5s超时
 
@@ -49,8 +48,9 @@ public class RequestSourceHandler extends BaseRequestHandler {
 
             return null;
         } else {
-            LogManager.info("get resource: " + res.toString());
+            LogManager.info("success get resource: " + res.toString());
         }
+
         return GsonProvider.gson().toJson(res);  //currently must be convert to String(because of Gson.toJson) which should be Fixme!
     }
 }

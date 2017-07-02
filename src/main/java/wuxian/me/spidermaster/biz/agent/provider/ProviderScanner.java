@@ -1,6 +1,7 @@
 package wuxian.me.spidermaster.biz.agent.provider;
 
 import com.sun.istack.internal.Nullable;
+import com.sun.tools.javac.util.Log;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.util.ClassHelper;
 import wuxian.me.spidermaster.biz.provider.IProvider;
@@ -45,7 +46,6 @@ public class ProviderScanner {
 
         try {
             Set<Class<?>> classSet = ClassHelper.getClasses(pack);  //Fixme:这个函数有bug 并不能扫描到所有类
-
             for (Class clazz : classSet) {
                 performCheckAndCollect(clazz);
             }
@@ -59,12 +59,16 @@ public class ProviderScanner {
      * 1 被@Provider注解
      * 2 实现IProvider接口
      * 3 构造函数为public
+     *
      * @param clazz
      */
     public static void performCheckAndCollect(Class clazz) {
         if (clazz == null) {
             return;
         }
+
+        LogManager.info("ProviderScanner.check " + clazz.getName());
+
 
         Provider annotation = (Provider) (clazz.getAnnotation(Provider.class));
         if (annotation == null) {
@@ -112,7 +116,8 @@ public class ProviderScanner {
             providerMap.put(annotation.provide(), provider);
             methodMap.put(annotation.provide(), method);
 
-            LogManager.info("find provider:" + clazz.getName() + " provide:" + annotation.provide());
+            LogManager.info("find provider:" + clazz.getSimpleName()
+                    + " which provides:" + annotation.provide());
 
         } catch (NoSuchMethodException e) {
 
@@ -163,9 +168,7 @@ public class ProviderScanner {
         } catch (InvocationTargetException e) {
 
         }
-
         return null;
     }
-
 
 }

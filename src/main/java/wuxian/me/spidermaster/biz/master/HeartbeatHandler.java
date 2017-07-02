@@ -18,6 +18,8 @@ public class HeartbeatHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
+        LogManager.info("in HeartbeatHandler.handleRequest");
+
         return RpcRetCode.SUCCESS.ordinal();
     }
 

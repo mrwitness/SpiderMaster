@@ -51,6 +51,8 @@ public class MasterServer {
             return;
         }
         started = true;
+
+        LogManager.info("begin to scan rpc request handlers");
         HandlerManager.scanAndCollectHandlers();
 
         EventLoopGroup boss = new NioEventLoopGroup(10);
@@ -63,7 +65,9 @@ public class MasterServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(final SocketChannel socketChannel) throws Exception {
 
+                            LogManager.info("server received connection: " + socketChannel.toString());
                             ConnectionManager.recordConnection(socketChannel);
+
                             List<Class<?>> classList = new ArrayList<Class<?>>();
                             classList.add(RpcResponse.class);
                             classList.add(RpcRequest.class);
@@ -76,8 +80,10 @@ public class MasterServer {
                             socketChannel.closeFuture().addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
+
+                                    LogManager.info("connection: " + socketChannel.toString() + " is closed");
                                     ConnectionManager.removeConnection(socketChannel);
-                                    LogManager.error("receive channel close message");
+
                                 }
                             });
                         }
@@ -86,9 +92,9 @@ public class MasterServer {
                     .option(ChannelOption.AUTO_READ, true)   //If Not Being Set,Can't accpet multi client!!!
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            LogManager.info("Master Server begin to bind port: " + port);
+            LogManager.info("server begin to bind port: " + port);
             ChannelFuture future = bootstrap.bind(host, port).sync();
-            LogManager.info("Bind success");
+            LogManager.info("bind success");
 
             if (lifecycle != null) {
                 lifecycle.onBindSuccess(host, port);
@@ -97,7 +103,7 @@ public class MasterServer {
             serverSocket = future.channel();
             future.channel().closeFuture().sync();
 
-            LogManager.info("MasterServer Socket closed");
+            LogManager.info("server socket closed");
         } catch (InterruptedException e) {
 
         } finally {

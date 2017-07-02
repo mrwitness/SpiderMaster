@@ -28,6 +28,7 @@ public class RegistryHandler extends BaseRequestHandler {
 
     public Object handleRequest(RpcRequest request, SocketChannel channel) throws HandlerExcepiton {
 
+
         String data = request.datas;
 
         RegisterReqModel model = GsonProvider.gson().fromJson(data, RegisterReqModel.class);
@@ -36,10 +37,11 @@ public class RegistryHandler extends BaseRequestHandler {
             return RpcRetCode.FAIL.ordinal();
         }
 
-        LogManager.info("RegistryHandler.handle " + model.toString());
+        LogManager.info("in Registry.handleRequest, we have agent:" + model.toString() + " registed");
+
 
         List<SpiderFeature> featureList = model.featureList;
-        if(featureList == null ) {
+        if (featureList == null) {
             featureList = new ArrayList<SpiderFeature>();
         }
 
@@ -56,7 +58,7 @@ public class RegistryHandler extends BaseRequestHandler {
         }
 
         List<Spider> spiderList = new ArrayList<Spider>();
-        for(SpiderFeature feature:featureList) {
+        for (SpiderFeature feature : featureList) {
             spiderList.add(Spider.fromFeature(feature));
         }
         agent.setSpiderList(spiderList);

@@ -3,6 +3,7 @@ package wuxian.me.spidermaster.biz.agent;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import com.sun.tools.internal.ws.processor.model.Response;
+import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScanner;
@@ -36,6 +37,8 @@ public class SpiderAgent {
     private SpiderClient spiderClient;
 
     public static void init() {
+
+        LogManager.info("init SpiderConfig");
         SpiderConfig.init();
     }
 
@@ -58,12 +61,19 @@ public class SpiderAgent {
     }
 
     public void start() {
+
+        LogManager.info("init NioEnv");
         NioEnv.init();
+
+        LogManager.info("begin to scan providers");
         ProviderScanner.scanAndCollectProviders();
 
         SpiderClient.registerRpcHandler(Requestor.REQUEST_RESROURCE, new ResourceHandler());
 
+        LogManager.info("init spider client");
         spiderClient.init();
+
+        LogManager.info("spider client begin to connect to " + serverIp + ":" + serverPort + " ...");
         spiderClient.asyncConnect(serverIp, serverPort);
     }
 

@@ -116,7 +116,7 @@ public class SpiderConnector implements Runnable {
         connected.set(false);
 
         for (ConnectionLifecycle connectCallback : connectCallbackList) {
-            connectCallback.onConnectionClosed(clientClose);
+            connectCallback.onConnectionClosed(socketChannel, clientClose);
         }
         LogManager.info("SpiderConnector.closed");
     }

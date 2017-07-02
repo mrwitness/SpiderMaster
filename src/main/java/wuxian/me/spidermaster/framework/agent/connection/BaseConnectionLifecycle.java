@@ -22,7 +22,7 @@ public abstract class BaseConnectionLifecycle implements ConnectionLifecycle {
     }
 
     @Override
-    public void onConnectionClosed(boolean isClient) {
+    public void onConnectionClosed(SocketChannel channel, boolean isClient) {
 
     }
 }

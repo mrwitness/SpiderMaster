@@ -6,6 +6,7 @@ import wuxian.me.spidercommon.util.ProcessUtil;
 import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
+import wuxian.me.spidermaster.biz.control.Agent;
 import wuxian.me.spidermaster.biz.control.AgentRecorder;
 import wuxian.me.spidermaster.biz.control.StatusEnum;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
@@ -25,9 +26,13 @@ public class Main {
 
     public void start() {
 
+        LogManager.info("init SpiderConfig");
         SpiderConfig.init();
+
+        LogManager.info("init shellutil");
         ShellUtil.init();
 
+        LogManager.info("init signal manager");
         signalManager.init();
 
         if (SpiderConfig.spiderMode == 0) {
@@ -97,11 +102,12 @@ public class Main {
     }
 
     private void startMaster() {
-        LogManager.info("startMaster...");
+        LogManager.info("start master server...");
 
         final MasterServer server = new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort, new MasterServer.ServerLifecycle() {
             @Override
             public void onBindSuccess(String ip, int port) {
+                AgentRecorder.init();
                 AgentRecorder.startPrintThread();
             }
 

@@ -26,13 +26,15 @@ public class SpiderClient implements IClient {
     private int serverPort;
 
     public void init() {
+
+        LogManager.info("init rpc message sender");
         sender.init();
 
         SpiderConnector.addConnectCallback(new BaseConnectionLifecycle() {
 
             public void onConnectionBuilded(SocketChannel channel) {
 
-                LogManager.info("SpiderClient connect success");
+                LogManager.info("spider client success connect to server,connection: " + channel.toString());
                 SpiderClient.this.channel = channel;  //save channel
 
                 SpiderClient.this.channel.pipeline()
@@ -42,9 +44,9 @@ public class SpiderClient implements IClient {
                 sender.onConncetSuccess();
             }
 
-            public void onConnectionClosed(boolean isClient) {
+            public void onConnectionClosed(SocketChannel channel, boolean isClient) {
 
-                LogManager.info("SpiderClient.onConnectionClosed isClient:" + isClient);
+                LogManager.info("connection: " + channel.toString() + " closed by" + (isClient ? "client" : "server"));
                 sender.onConnectionClosed(isClient);
 
                 if (!isClient) { //若是server主动断开的 那么立即重连
@@ -61,9 +63,6 @@ public class SpiderClient implements IClient {
     public void asyncConnect(final String serverIp, final int serverPort) {
         this.serverIp = serverIp;
         this.serverPort = serverPort;
-
-        LogManager.info("SpiderClient begin to connect ip:" + serverIp + " ip:" + serverPort);
-
         SpiderConnector.getInstance().connectTo(serverIp, serverPort);
     }
 
@@ -76,18 +75,17 @@ public class SpiderClient implements IClient {
     }
 
     public Object onReceiveMessage(RpcRequest request) {
-        LogManager.info("onReceiveMessage: request:" + request.methodName);
         if (request == null) {
             return null;
         }
 
         if (!requestMap.containsKey(request.methodName)) {
-            LogManager.error("can't handle request");
+            LogManager.error("fail to find handler to handle the request");
             return null;
         }
 
         IRpcRequestHandler onRpcRequest = requestMap.get(request.methodName);
-        LogManager.info("find handler: " + onRpcRequest.toString());
+        //LogManager.info("find handler: " + onRpcRequest.toString());
 
         try {
             return onRpcRequest.handleRequest(request, null);

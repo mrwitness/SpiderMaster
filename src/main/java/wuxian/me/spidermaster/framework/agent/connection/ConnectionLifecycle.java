@@ -13,5 +13,5 @@ public interface ConnectionLifecycle {
 
     void onConnectException();
 
-    void onConnectionClosed(boolean isClient);
+    void onConnectionClosed(SocketChannel channel, boolean isClient);
 }

@@ -26,6 +26,7 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcRequest request) throws Exception {
 
+        LogManager.info("RPC Request received, " + request.toString());
         boolean needResponse = true;
 
         RpcResponse response = new RpcResponse();
@@ -33,7 +34,6 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
         IRpcRequestHandler handler = HandlerManager.findHandlerBy(request.methodName);
         if (handler != null) {
-            LogManager.info("getRpcRequest,rpcName: " + request.methodName + " handlerClass: " + handler.getClass());
             try {
                 Object ret = handler.handleRequest(request, channel);
 
@@ -47,10 +47,14 @@ public class AllRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
             }
 
         } else {
+
+            LogManager.info("fail to find any class to handle the request");
             response.retCode = RpcRetCode.FAIL.ordinal(); //Todo:设计一些错误返回码
         }
 
         if (needResponse) {
+
+            LogManager.info("Rpc Response send: " + response.toString());
             channelHandlerContext.writeAndFlush(response);
         }
 

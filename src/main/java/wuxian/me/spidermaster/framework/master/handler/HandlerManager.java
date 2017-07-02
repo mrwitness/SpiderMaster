@@ -45,8 +45,7 @@ public class HandlerManager {
     }
 
     private static void checkAndCollect(Class clazz) {
-
-        LogManager.info("HandlerManager.check " + clazz.getName());
+        //LogManager.info("HandlerManager.check " + clazz.getName());
 
         if (Modifier.isAbstract(clazz.getModifiers())) {
             return;
@@ -69,7 +68,7 @@ public class HandlerManager {
 
             IRpcRequestHandler o = (IRpcRequestHandler) constructor.newInstance(null);
             handlerMap.put(o.getMethodName(), o);
-            LogManager.info("find handler: " + clazz.getName());
+            LogManager.info("find handler: " + clazz.getSimpleName() + " which can handle " + o.getMethodName() + " request");
 
             return;
 

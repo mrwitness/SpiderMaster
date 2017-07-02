@@ -26,6 +26,7 @@ public class AgentRecorder implements Runnable {
     private static AtomicBoolean isStarting = new AtomicBoolean(false);
 
     public static void recordAgent(Agent agent) {
+
         if (agent == null) {
             return;
         }
@@ -84,8 +85,6 @@ public class AgentRecorder implements Runnable {
             @Override
             public void onConnRemove(SocketChannel channel) {
 
-                LogManager.info("channel:" + channel.toString() + " disconnected!");
-
                 if (map.keySet().contains(channel)) {
                     map.get(channel).setCurrentState(StatusEnum.DISCONNECTED);
                 }
@@ -124,8 +123,16 @@ public class AgentRecorder implements Runnable {
             }
 
             Set<Agent> agents = new HashSet<Agent>(agentSet);
-            if (agents != null && agents.size() != 0) {
-                LogManager.info("begin to print All Agents");
+            int size = 0;
+            if (agents != null) {
+                for (Agent agent : agents) {
+                    if (agent.getCurrentState() != StatusEnum.DISCONNECTED) {
+                        size++;
+                    }
+                }
+            }
+            if (size != 0) {
+                LogManager.info("agent list is not empty, begin to print all these agents");
             }
             for (Agent agent : agents) {
                 if (agent.getCurrentState() == StatusEnum.DISCONNECTED) {  //don't print those agent who is disconnected

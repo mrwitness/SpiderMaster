@@ -31,9 +31,9 @@ public class ResourceHandler extends BaseRequestHandler {
         Object o = ProviderScanner.provideResource(resource);
 
         if (o == null) {
-            LogManager.info("onRpcRequest return null");
+            LogManager.info("rpc response return null");
         } else {
-            LogManager.info("onRpcRequest return " + o.toString());
+            LogManager.info("rpc response return " + o.toString());
         }
 
         return o;

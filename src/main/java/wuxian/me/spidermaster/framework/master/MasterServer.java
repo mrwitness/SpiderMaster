@@ -73,7 +73,7 @@ public class MasterServer {
                             classList.add(RpcResponse.class);
 
                             socketChannel.pipeline()
-                                    .addLast(new RpcDecoder(classList))  //Fixme:这里的解析器组有点问题
+                                    .addLast(new RpcDecoder(classList))
                                     .addLast(new RpcEncoder(classList))
                                     .addLast(new AllRequestHandler(socketChannel));
 

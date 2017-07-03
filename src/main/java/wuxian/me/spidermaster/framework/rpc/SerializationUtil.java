@@ -6,6 +6,7 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
+import wuxian.me.spidermaster.framework.common.GsonProvider;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

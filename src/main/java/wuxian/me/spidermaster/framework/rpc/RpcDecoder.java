@@ -52,14 +52,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
     public void decode(ChannelHandlerContext ctx,
                           ByteBuf in, List<Object> out) throws Exception {
-
-        LogManager.info("RpcDecoder.decode");
-
-        if (in.readableBytes() != 0) {
-            safePrintByteBuf(in);
-        } else {
-            LogManager.info("bytebuf empty");
-        }
+        //LogManager.info("RpcDecoder.decode");
 
         if (classList == null || classList.size() == 0) {
             return;
@@ -81,7 +74,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         in.readBytes(data);
 
         Object obj = null;
-        boolean success = true;
+        boolean success = false;
 
 
         for (Class<?> clazz : classList) {  //支持多个decoder解析器
@@ -89,23 +82,23 @@ public class RpcDecoder extends ByteToMessageDecoder {
                 obj = SerializationUtil.deserialize(data, clazz); //Fixme:类型检测太弱逼了
 
                 if (obj != null) {
-
-                    LogManager.info("decode success with " + clazz.getSimpleName() + " obj is " + obj.toString());
+                    //LogManager.info("decode with " + clazz.getSimpleName() + " obj is " + obj.toString());
 
                     if (clazz.equals(RpcRequest.class)) {  //Fixme:为了规避SerializationUtil.deserialize的bug 先这样猥琐处理
                         String method = ((RpcRequest) obj).methodName;
-                        if (method != null && method.length() != 0) {
-                            in.clear();
-                            success = true;
-                            break;
+                        if (method == null || method.length() == 0) {
+                            continue;
                         }
                     }
 
+                    success = true;
+                    break;
+
                 }
             } catch (IllegalStateException e) {
-                success = false;
+
             } catch (Exception e) {
-                success = false;
+
             }
         }
 

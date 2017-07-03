@@ -4,7 +4,10 @@ import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidercommon.log.LogManager;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -25,14 +28,37 @@ public class ResourcePool {
 
     private static Map<Lock, Condition> conditionMap = new ConcurrentHashMap<Lock, Condition>();
 
-    @Nullable
-    public static Resource getResource(String reqId, String resource) {
+    private static Set<Resource> resourceSet = new HashSet<Resource>();
+    private static Set<String> waitSet = new HashSet<String>();
 
+    @Nullable
+    public static Resource getResourceFromSet(String resourceName) {
+        Resource ret = null;
+        synchronized (resourceSet) {
+            for (Resource res : resourceSet) {
+
+                if (resourceName.equals(res.name)) {
+                    ret = res;
+                    resourceSet.remove(res);
+                }
+            }
+        }
+
+        return ret;
+
+    }
+
+    @Nullable
+    public static Resource getResourceFromWaitmap(String reqId, String resource) {
         if (reqId == null || resource == null || !resourcePool.containsKey(reqId)) {
             return null;
         }
 
-        return resourcePool.get(reqId);
+        Resource ret = resourcePool.get(reqId);
+        resourcePool.remove(ret);
+        waitSet.remove(reqId);
+
+        return ret;
 
     }
 
@@ -41,11 +67,17 @@ public class ResourcePool {
             return;
         }
 
+        synchronized (waitSet) {
+            if (!waitSet.contains(reqId)) {  //not waited by condition
+                resourceSet.add(resource);
+                return;
+            }
+        }
+
         resourcePool.put(reqId, resource);
 
         Lock lock = getLock(reqId);
         Condition condition = getConditionBy(lock);
-
         lock.lock();
         try {
             condition.signalAll();
@@ -58,21 +90,7 @@ public class ResourcePool {
     }
 
     public static void waitForResource(String reqId, String resource) {
-        if (reqId == null || resource == null || resource.length() == 0) {
-            return;
-        }
-
-        Lock lock = getLock(reqId);
-        Condition condition = getConditionBy(lock);
-
-        lock.lock();
-        try {
-            condition.await();
-        } catch (InterruptedException e) {
-            ;
-        } finally {
-            lock.unlock();
-        }
+        waitForResource(reqId, resource, -1);
     }
 
     public static void waitForResource(String reqId, String resource, long timeout) {
@@ -80,12 +98,23 @@ public class ResourcePool {
             return;
         }
 
+        synchronized (waitSet) {
+            if (!waitSet.contains(reqId)) {
+                waitSet.add(reqId);
+            }
+        }
+
         Lock lock = getLock(reqId);
         Condition condition = getConditionBy(lock);
 
         lock.lock();
         try {
-            condition.await(timeout, TimeUnit.MILLISECONDS);
+            if (timeout == -1) {
+                condition.await();
+            } else {
+                condition.await(timeout, TimeUnit.MILLISECONDS);
+            }
+
         } catch (InterruptedException e) {
             ;
         } finally {

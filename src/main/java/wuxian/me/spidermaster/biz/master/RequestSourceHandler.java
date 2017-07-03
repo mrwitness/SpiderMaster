@@ -37,11 +37,18 @@ public class RequestSourceHandler extends BaseRequestHandler {
         }
 
         providerChannel.writeAndFlush(request);
-        LogManager.info("wait for resource: " + resource);
 
-        ResourcePool.waitForResource(request.requestId, resource, 5000);//默认5s超时
+        Resource res = null;
+        if (!channel.eventLoop().equals(providerChannel.eventLoop())) {
 
-        Resource res = ResourcePool.getResource(request.requestId, resource);
+            LogManager.info("wait for resource: " + resource);
+            ResourcePool.waitForResource(request.requestId, resource, 5000);//默认5s超时
+
+            res = ResourcePool.getResourceFromWaitmap(request.requestId, resource);
+        } else {
+            //if using the same eventloop can't wait,otherwise will switch to deadlock state
+            res = ResourcePool.getResourceFromSet(resource);
+        }
 
         if (res == null) {
             LogManager.info("get resource fail");

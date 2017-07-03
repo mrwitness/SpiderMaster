@@ -41,14 +41,14 @@ public class RpcEncoder extends MessageToByteEncoder {
     @Override
     public void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) throws Exception {
 
-        LogManager.info("RpcEncoder.encode: " + in.toString());
+        //LogManager.info("RpcEncoder.encode: " + in.toString());
         for (Class<?> claz : classList) { //支持多种encoder
             if (claz.isInstance(in)) {
                 out.clear();
                 byte[] data = SerializationUtil.serialize(in);
                 out.writeInt(data.length);
                 out.writeBytes(data);
-                LogManager.info("encode success with " + claz.getSimpleName());
+                //LogManager.info("encode success with " + claz.getSimpleName());
                 return;
             }
         }

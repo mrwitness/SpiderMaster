@@ -13,7 +13,6 @@ import wuxian.me.spidermaster.framework.rpc.RpcRequest;
  */
 @RpcMethodName(methodName = Requestor.REQUEST_RESROURCE)
 public class ResourceHandler extends BaseRequestHandler {
-
     public ResourceHandler() {
     }
 
@@ -28,15 +27,15 @@ public class ResourceHandler extends BaseRequestHandler {
         LogManager.info("ResourceHandler.onRpcRequest");
         String resource = request.datas;
 
-        Object o = ProviderScanner.provideResource(resource);
+        Object res = ProviderScanner.provideResource(resource);
 
-        if (o == null) {
+        if (res == null) {
             LogManager.info("rpc response return null");
         } else {
-            LogManager.info("rpc response return " + o.toString());
+            LogManager.info("rpc response return " + res.toString());
         }
 
-        return o;
+        return res;
     }
 
 }

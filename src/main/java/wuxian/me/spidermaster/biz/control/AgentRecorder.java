@@ -99,7 +99,6 @@ public class AgentRecorder implements Runnable {
     }
 
     public static void startPrintThread() {
-
         if (isStarting.get() || started.get()) {  //already connectiong
             return;
         }
@@ -127,7 +126,12 @@ public class AgentRecorder implements Runnable {
             if (agents != null) {
                 for (Agent agent : agents) {
                     if (agent.getCurrentState() != StatusEnum.DISCONNECTED) {
-                        size++;
+                        if (AgentHealthChecker.getDefault().isHealthy(agent)) {
+                            size++;
+                        } else {
+                            //Todo:send a "stop agent" command to that agent.
+                        }
+
                     }
                 }
             }

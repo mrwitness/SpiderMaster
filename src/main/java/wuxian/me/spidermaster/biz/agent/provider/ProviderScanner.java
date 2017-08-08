@@ -157,10 +157,14 @@ public class ProviderScanner {
 
         try {
             Object o = method.invoke(provider, null);
+            if(o == null) {
+                return null;
+            }
 
             Resource resource = new Resource();
             resource.name = name;
             resource.data = o;
+
 
             return resource;
         } catch (IllegalAccessException e) {

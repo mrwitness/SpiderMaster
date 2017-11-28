@@ -37,6 +37,6 @@ if __name__ == '__main__':
     jar = get_jar_argument_under(lib_path)
     jar = jar + os.path.join(current_path, "SpiderMaster.jar")
     # print jar
-    args = ["java", "-cp", jar, "wuxian.me.spidermaster.Main"]
+    args=["java -XX:+PrintGCDetails -Xmx256m -Xmx128m -Xloggc:./gclog.txt" ,"-cp",jar,"wuxian.me.spidermaster.Main"]    
     jar_wrapper(args)
 # print jar

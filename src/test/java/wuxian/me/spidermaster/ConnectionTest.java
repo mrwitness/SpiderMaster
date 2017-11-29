@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster;
 
 import org.junit.Test;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;

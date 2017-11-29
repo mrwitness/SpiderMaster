@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster.benchmark.dubbo;
 
 /**
  * Abstract Service Factory,create custom nums Service

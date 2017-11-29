@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster.benchmark.dubbo;
 
 //import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -6,7 +6,7 @@ public class RpcBenchmarkServer extends AbstractBenchmarkServer {
 
     public static void main(String[] args) throws Exception {
 
-        //Todo
+        //Todo:改造
         /*
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("ProviderSample.xml");
         ctx.start();

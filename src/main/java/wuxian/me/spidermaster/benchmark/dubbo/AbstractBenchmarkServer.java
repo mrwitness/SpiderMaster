@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster.benchmark.dubbo;
 
 
 import java.text.SimpleDateFormat;

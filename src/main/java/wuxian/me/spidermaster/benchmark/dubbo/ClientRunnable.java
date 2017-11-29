@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster.benchmark.dubbo;
 
 import java.util.List;
 
@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface ClientRunnable extends Runnable {
 
-    public List<long[]> getResults();
+    List<long[]> getResults();
 
 }

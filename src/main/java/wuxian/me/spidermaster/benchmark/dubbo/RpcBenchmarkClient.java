@@ -1,9 +1,15 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster.benchmark.dubbo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
+/**
+ * 作为run_client.sh的脚本入口
+ * 实际读取xxx.properties中的classname作为ClientRunnable的实现类
+ * --> 在这里是@SimpleProcessorBenchmarkClientRunnable
+ * --> 实际项目里需要 新建一个实现AbstractClientRunnable的类 然后配置到xxx.properties.classname
+ */
 public class RpcBenchmarkClient extends AbstractBenchmarkClient {
 
     public static void main(String[] args) throws Exception {

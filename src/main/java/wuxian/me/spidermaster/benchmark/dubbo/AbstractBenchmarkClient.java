@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark;
+package wuxian.me.spidermaster.benchmark.dubbo;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -15,13 +15,19 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
 /**
- * Abstract benchmark client,test for difference scenes Usage: -Dwrite.statistics=false BenchmarkClient serverIP
- * serverPort concurrents timeout codectype requestSize runtime(seconds) clientNums
- *
- * @author <a href="mailto:bluedavy@gmail.com">bluedavy</a>
- */
+ * 用法
+ * 1 java -Djava.ext.dirs="./lib" "wuxian.me.xx.RpcBenchmarkClient"  -Dwrite.statistics=false BenchmarkClient serverIP serverPort  concurrents timeout codectype requestSize runtime(seconds) clientNums
+ * 2 后面的参数通过xxx.properties文件读取
+ * 3 从代码上看1已经被废弃
+ **/
 
-//Todo
+/**
+ * 实际工作流程
+ * 1 读取xxx.properties文件 拿到serverip,serverport,concurrents
+ * 2 开启concurrents个线程调用 getClientRunnable.run --> getClientRunnable由子类实现
+ * 3 根据2的特性,这个类可以被我的benchmark复用
+ **/
+//Todo:在我的benchmark中复用这个类
 public abstract class AbstractBenchmarkClient {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -68,6 +74,7 @@ public abstract class AbstractBenchmarkClient {
     private static long above1000sum;
 
     Properties properties = ConfigUtils.getProperties();
+
 
     public void run(String[] args) throws Exception {
 

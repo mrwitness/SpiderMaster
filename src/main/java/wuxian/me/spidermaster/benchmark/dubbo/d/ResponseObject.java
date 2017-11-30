@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark.dubbo.d;
 
 import java.io.Serializable;
 

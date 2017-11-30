@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark;
 
 import java.io.FileInputStream;
 import java.net.URL;
@@ -19,6 +19,7 @@ public class ConfigUtils {
     private ConfigUtils() {
     }
 
+    /*
     public static boolean isNotEmpty(String value) {
         return !isEmpty(value);
     }
@@ -36,23 +37,11 @@ public class ConfigUtils {
                 || "default".equalsIgnoreCase(value);
     }
 
-    /**
-     * 扩展点列表中插入缺省扩展点。
-     * <p>
-     * 扩展点列表支持<ul>
-     * <li>特殊值<code><strong>default</strong></code>，表示缺省扩展点插入的位置
-     * <li>特殊符号<code><strong>-</strong></code>，表示剔除。 <code>-foo1</code>，剔除添加缺省扩展点foo1。<code>-default</code>，剔除添加所有缺省扩展点。
-     * </ul>
-     *
-     * @param type 扩展点类型
-     * @param cfg  扩展点名列表
-     * @param def  缺省的扩展点的列表
-     * @return 完成缺省的扩展点列表插入后的列表
-     */
+
     @Deprecated
     public static List<String> mergeValues(Class<?> type, String cfg, List<String> def) {
         List<String> defaults = new ArrayList<String>();
-        /*
+
         if (def != null) {
             for (String name : def) {
                 if (ExtensionLoader.getExtensionLoader(type).hasExtension(name)) {
@@ -94,9 +83,7 @@ public class ConfigUtils {
         }
 
         return names;
-        */
 
-        return defaults;
     }
 
     public static String replaceProperty(String expression, Map<String, String> params) {
@@ -119,6 +106,12 @@ public class ConfigUtils {
         matcher.appendTail(sb);
         return sb.toString();
     }
+    */
+
+    //Todo
+    public static void initFromFile(String fileName) {
+        ;
+    }
 
     public static Properties getProperties() {
         /*
@@ -139,6 +132,8 @@ public class ConfigUtils {
         */
         return PROPERTIES;
     }
+    /*
+
 
     public static void setProperties(Properties properties) {
         if (properties != null) {
@@ -166,12 +161,6 @@ public class ConfigUtils {
         return replaceProperty(properties.getProperty(key, defaultValue), (Map) properties);
     }
 
-    /**
-     *  系统环境变量 -> java命令参数-D
-     *
-     * @param key
-     * @return
-     */
     public static String getSystemProperty(String key) {
         String value = System.getenv(key);
         if (value == null || value.length() == 0) {
@@ -188,21 +177,10 @@ public class ConfigUtils {
         return loadProperties(fileName, allowMultiFile, false);
     }
 
-    /**
-     * Load properties file to {@link Properties} from class path.
-     *
-     * @param fileName       properties file name. for example: <code>dubbo.properties</code>, <code>METE-INF/conf/foo.properties</code>
-     * @param allowMultiFile if <code>false</code>, throw {@link IllegalStateException} when found multi file on the class path.
-     * @param optional       is optional. if <code>false</code>, log warn when properties config file not found!s
-     * @return loaded {@link Properties} content. <ul>
-     * <li>return empty Properties if no file found.
-     * <li>merge multi properties file if found multi file
-     * </ul>
-     * @throws IllegalStateException not allow multi-file, but multi-file exsit on class path.
-     */
+
     public static Properties loadProperties(String fileName, boolean allowMultiFile, boolean optional) {
         Properties properties = new Properties();
-        /*
+
         if (fileName.startsWith("/")) {
             try {
                 FileInputStream input = new FileInputStream(fileName);
@@ -212,7 +190,7 @@ public class ConfigUtils {
                     input.close();
                 }
             } catch (Throwable e) {
-                //logger.warn("Failed to load " + fileName + " file from " + fileName + "(ingore this file): " + e.getMessage(), e);
+                logger.warn("Failed to load " + fileName + " file from " + fileName + "(ingore this file): " + e.getMessage(), e);
             }
             return properties;
         }
@@ -274,12 +252,12 @@ public class ConfigUtils {
             }
         }
 
-*/
+
         return properties;
     }
 
     public static int getPid() {
-        /*
+
         if (PID < 0) {
             try {
                 RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
@@ -289,8 +267,9 @@ public class ConfigUtils {
                 PID = 0;
             }
         }
-        */
+
         return PID;
     }
+    */
 
 }

@@ -1,14 +1,10 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark.dubbo.d;
 
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Abstract benchmark server Usage: BenchmarkServer listenPort maxThreads responseSize
- *
- * @author <a href="mailto:bluedavy@gmail.com">bluedavy</a>
- */
+//Todo:进行社会主义改造
 public abstract class AbstractBenchmarkServer {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

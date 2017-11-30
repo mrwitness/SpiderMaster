@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CountDownLatch;

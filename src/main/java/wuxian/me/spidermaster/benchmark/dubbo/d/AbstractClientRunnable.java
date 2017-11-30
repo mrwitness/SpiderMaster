@@ -1,23 +1,24 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark.dubbo.d;
+
+/**
+ * nfs-rpc Apache License http://code.google.com/p/nfs-rpc (c) 2011
+ */
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import wuxian.me.spidermaster.benchmark.ClientRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
-/**
- * Simple Processor RPC Benchmark Client Thread
- *
- * @author <a href="mailto:bluedavy@gmail.com">bluedavy</a>
- */
-public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
 
-    private static final Log LOGGER = LogFactory.getLog(SimpleProcessorBenchmarkClientRunnable.class);
+// Simple Processor RPC Benchmark Client Thread
+//Todo:进行社会主义改造
+public abstract class AbstractClientRunnable implements ClientRunnable {
 
-    private int requestSize;
+    private static final Log LOGGER = LogFactory.getLog(AbstractClientRunnable.class);
 
     private CyclicBarrier barrier;
 
@@ -26,17 +27,6 @@ public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
     private long endTime;
 
     private boolean running = true;
-
-    //Todo:ExchangeClient 这个是用来connect远程的 因此需要替换成spidermaster的client
-    //private ExchangeClientFactory clientFactory = new ExchangeClientFactory();
-
-    private String targetIP;
-
-    private int targetPort;
-
-    private int clientNums;
-
-    private int rpcTimeout;
 
     // response time spread
     private long[] responseSpreads = new long[9];
@@ -59,18 +49,22 @@ public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
     // benchmark maxRange
     private int maxRange;
 
-    public SimpleProcessorBenchmarkClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
-                                                  CyclicBarrier barrier, CountDownLatch latch, long startTime,
-                                                  long endTime) {
-        this.targetIP = targetIP;
-        this.targetPort = targetPort;
-        this.clientNums = clientNums;
-        this.rpcTimeout = rpcTimeout;
+    //private ServiceFactory serviceFactory = new ServiceFactory();
+
+    public AbstractClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
+                                  CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime) {
+
         this.barrier = barrier;
         this.latch = latch;
         this.startTime = startTime;
         this.endTime = endTime;
-        maxRange = (Integer.parseInt(String.valueOf((endTime - startTime))) / 1000) + 1;
+        /*
+        serviceFactory.setTargetIP(targetIP);
+        serviceFactory.setClientNums(clientNums);
+        serviceFactory.setTargetPort(targetPort);
+        serviceFactory.setConnectTimeout(rpcTimeout);
+        */
+        maxRange = (Integer.parseInt(String.valueOf((endTime - startTime))) / 1000000) + 1;
         errorTPS = new long[maxRange];
         errorResponseTimes = new long[maxRange];
         tps = new long[maxRange];
@@ -96,48 +90,42 @@ public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
 
     private void runJavaAndHessian() {
         while (running) {
-            Object requestObject = null;//Todo new RequestObject(requestSize);
-            long beginTime = System.nanoTime();
+            long beginTime = System.nanoTime() / 1000L;
             if (beginTime >= endTime) {
                 running = false;
                 break;
             }
             try {
-                Object response = null;
-                response = null;//Todo clientFactory.get(targetIP, targetPort, rpcTimeout, clientNums).request(requestObject).get();
-                long currentTime = System.nanoTime();
+                Object result = null;//invoke(serviceFactory);
+                long currentTime = System.nanoTime() / 1000L;
                 if (beginTime <= startTime) {
                     continue;
                 }
                 long consumeTime = currentTime - beginTime;
                 sumResponseTimeSpread(consumeTime);
-                int range = Integer.parseInt(String.valueOf(beginTime - startTime)) / 1000;
+                int range = Integer.parseInt(String.valueOf(beginTime - startTime)) / 1000000;
                 if (range >= maxRange) {
                     System.err.println("benchmark range exceeds maxRange,range is: " + range + ",maxRange is: "
                             + maxRange);
                     continue;
                 }
-
-                //Todo
-                /*
-                if (((ResponseObject) response).getBytes() != null) {
+                if (result != null) {
                     tps[range] = tps[range] + 1;
                     responseTimes[range] = responseTimes[range] + consumeTime;
                 } else {
-                    LOGGER.error("server return response is null");
+                    LOGGER.error("server return result is null");
                     errorTPS[range] = errorTPS[range] + 1;
                     errorResponseTimes[range] = errorResponseTimes[range] + consumeTime;
                 }
-                */
             } catch (Exception e) {
                 LOGGER.error("client.invokeSync error", e);
-                long currentTime = System.nanoTime();
+                long currentTime = System.nanoTime() / 1000L;
                 if (beginTime <= startTime) {
                     continue;
                 }
                 long consumeTime = currentTime - beginTime;
                 sumResponseTimeSpread(consumeTime);
-                int range = Integer.parseInt(String.valueOf(beginTime - startTime)) / 1000;
+                int range = Integer.parseInt(String.valueOf(beginTime - startTime)) / 1000000;
                 if (range >= maxRange) {
                     System.err.println("benchmark range exceeds maxRange,range is: " + range + ",maxRange is: "
                             + maxRange);
@@ -148,6 +136,9 @@ public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
             }
         }
     }
+
+    //Todo:改造
+    //public abstract Object invoke(ServiceFactory<?> serviceFactory);
 
     public List<long[]> getResults() {
         List<long[]> results = new ArrayList<long[]>();
@@ -160,7 +151,7 @@ public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
     }
 
     private void sumResponseTimeSpread(long responseTime) {
-        responseTime = responseTime / 1000;
+        responseTime = responseTime / 1000L;
         if (responseTime <= 0) {
             responseSpreads[0] = responseSpreads[0] + 1;
         } else if (responseTime > 0 && responseTime <= 1) {

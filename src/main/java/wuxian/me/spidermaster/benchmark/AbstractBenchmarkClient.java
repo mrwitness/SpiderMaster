@@ -1,4 +1,4 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -73,7 +73,13 @@ public abstract class AbstractBenchmarkClient {
     // > 1000
     private static long above1000sum;
 
-    Properties properties = ConfigUtils.getProperties();
+    static {
+        //Todo
+        ConfigUtils.initFromFile("benchmark.properties");
+    }
+
+
+    public Properties properties = ConfigUtils.getProperties();
 
 
     public void run(String[] args) throws Exception {

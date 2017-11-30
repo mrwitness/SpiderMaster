@@ -1,10 +1,10 @@
-package wuxian.me.spidermaster.benchmark.dubbo;
+package wuxian.me.spidermaster.benchmark.dubbo.d;
+
 
 /**
- * Abstract Service Factory,create custom nums Service
- *
- * @author tony.chenl
+ * 标准的用来invoker一个远程方法的代理
  */
+//Todo:进行社会主义改造
 public class ServiceFactory<T> {
 
     /*

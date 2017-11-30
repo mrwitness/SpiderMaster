@@ -1,7 +1,10 @@
 package wuxian.me.spidermaster;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.HttpUrlNode;
+import wuxian.me.spidercommon.util.FileUtil;
 import wuxian.me.spidercommon.util.ProcessUtil;
 import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
@@ -25,6 +28,8 @@ public class Main {
     private SignalManager signalManager = new SignalManager();
 
     public void start() {
+
+        PropertyConfigurator.configure(FileUtil.getCurrentPath() + "/conf/log4j.properties");
 
         LogManager.info("init SpiderConfig");
         SpiderConfig.init();
@@ -131,5 +136,6 @@ public class Main {
 
     public static void main(String[] args) {
         new Main().start();
+
     }
 }

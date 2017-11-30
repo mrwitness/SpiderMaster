@@ -12,6 +12,9 @@ public class LoggerTest {
 
         PropertyConfigurator.configure(FileUtil.getCurrentPath() + "/conf/log4j.properties");
 
+        Logger logger = Logger.getLogger(LoggerTest.class);
+        logger.info("log default");
+
         Logger logger1 = Logger.getLogger("server");
         logger1.info("server 1");
         logger1.debug("server 2");

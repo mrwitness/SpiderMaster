@@ -19,13 +19,18 @@ import java.util.Set;
  */
 public class HandlerManager {
 
+    private static boolean inited = false;
+
     private static Map<String, IRpcRequestHandler> handlerMap = new HashMap<String, IRpcRequestHandler>();
 
     private HandlerManager() {
     }
 
-
     public static void scanAndCollectHandlers() throws InitEnvException {
+        if (inited) {
+            return;
+        }
+        inited = true;
 
         String pack = SpiderConfig.bizScan;
         if (pack == null || pack.length() == 0) {
@@ -34,9 +39,8 @@ public class HandlerManager {
 
         try {
             Set<Class<?>> classSet = ClassHelper.getClasses(pack);
-
             for (Class clazz : classSet) {
-                checkAndCollect(clazz);
+                addIf(clazz);
             }
         } catch (IOException e) {
             ;
@@ -44,9 +48,7 @@ public class HandlerManager {
 
     }
 
-    private static void checkAndCollect(Class clazz) {
-        //LogManager.info("HandlerManager.check " + clazz.getName());
-
+    private static void addIf(Class clazz) {
         if (Modifier.isAbstract(clazz.getModifiers())) {
             return;
         }
@@ -56,7 +58,6 @@ public class HandlerManager {
         } catch (ClassCastException e) {
             return;
         }
-
 
         try {
             Constructor constructor = clazz.getConstructor();

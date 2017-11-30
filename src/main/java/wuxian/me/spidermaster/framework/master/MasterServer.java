@@ -6,8 +6,9 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import wuxian.me.spidercommon.log.LogManager;
+import org.apache.log4j.Logger;
 import wuxian.me.spidercommon.util.IpPortUtil;
+import wuxian.me.spidermaster.biz.control.AgentRecorder;
 import wuxian.me.spidermaster.framework.common.InitEnvException;
 import wuxian.me.spidermaster.framework.master.handler.HandlerManager;
 import wuxian.me.spidermaster.framework.rpc.RpcDecoder;
@@ -26,24 +27,61 @@ import java.util.List;
  */
 public class MasterServer {
 
+    static Logger logger = Logger.getLogger("server");
+
+    private static int DEFAULT_THREAD_NUM = 10;
     private boolean started = false;
     private String host = null;
     private int port;
 
-    private ServerLifecycle lifecycle = null;
+    private int threadNum = DEFAULT_THREAD_NUM;
 
-    public MasterServer(@NotNull String host, int port, ServerLifecycle lifecycle) {
-        this.host = host;
-        this.port = port;
-        this.lifecycle = lifecycle;
+    private List<ServerLifecycle> lifecycles = new ArrayList<ServerLifecycle>();
 
-        if (!IpPortUtil.isValidIpPort(host + ":" + port)) {
-            throw new InitEnvException("Ip or Port is not valid");
+    public void setThreadNum(int num) {
+        this.threadNum = num;
+    }
+
+    public void addServerLifecyle(ServerLifecycle lifecycle) {
+        if (lifecycle != null && !lifecycles.contains(lifecycle)) {
+            lifecycles.add(lifecycle);
         }
     }
 
     public MasterServer(@NotNull String host, int port) {
-        this(host, port, null);
+        this.host = host;
+        this.port = port;
+
+        if (!IpPortUtil.isValidIpPort(host + ":" + port)) {
+            throw new InitEnvException("Ip or Port is not valid");
+        }
+
+        addServerLifecyle(new ServerLifecycle() {
+            @Override
+            public void onBindSuccess(String ip, int port) {
+                logger.info("bind success");
+
+                AgentRecorder.init();
+                AgentRecorder.startPrintThread();
+            }
+
+            @Override
+            public void onShutdown() {
+                logger.info("server socket closed");
+            }
+
+            @Override
+            public void onReceiveConnection(SocketChannel socketChannel) {
+                logger.info("server received connection: " + socketChannel.toString());
+                ConnectionManager.recordConnection(socketChannel);
+            }
+
+            @Override
+            public void onConnectionClosed(SocketChannel socketChannel) {
+                logger.info("connection: " + socketChannel.toString() + " is closed");
+                ConnectionManager.removeConnection(socketChannel);
+            }
+        });
     }
 
     public void start() {
@@ -52,21 +90,14 @@ public class MasterServer {
         }
         started = true;
 
-        LogManager.info("begin to scan rpc request handlers");
-        HandlerManager.scanAndCollectHandlers();
-
-        EventLoopGroup boss = new NioEventLoopGroup(10);
-        EventLoopGroup worker = new NioEventLoopGroup(10);
-
+        EventLoopGroup boss = new NioEventLoopGroup();
+        EventLoopGroup worker = new NioEventLoopGroup(threadNum);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
 
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(final SocketChannel socketChannel) throws Exception {
-
-                            LogManager.info("server received connection: " + socketChannel.toString());
-                            ConnectionManager.recordConnection(socketChannel);
 
                             List<Class<?>> classList = new ArrayList<Class<?>>();
                             classList.add(RpcRequest.class);
@@ -80,10 +111,9 @@ public class MasterServer {
                             socketChannel.closeFuture().addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
-
-                                    LogManager.info("connection: " + socketChannel.toString() + " is closed");
-                                    ConnectionManager.removeConnection(socketChannel);
-
+                                    for (ServerLifecycle lifecycle : lifecycles) {
+                                        lifecycle.onConnectionClosed(socketChannel);
+                                    }
                                 }
                             });
                         }
@@ -92,25 +122,25 @@ public class MasterServer {
                     .option(ChannelOption.AUTO_READ, true)   //If Not Being Set,Can't accpet multi client!!!
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            LogManager.info("server begin to bind port: " + port);
+            logger.info("server begin to bind port: " + port);
             ChannelFuture future = bootstrap.bind(host, port).sync();
-            LogManager.info("bind success");
 
-            if (lifecycle != null) {
+
+            for (ServerLifecycle lifecycle : lifecycles) {
                 lifecycle.onBindSuccess(host, port);
             }
 
             serverSocket = future.channel();
             future.channel().closeFuture().sync();
 
-            LogManager.info("server socket closed");
+
         } catch (InterruptedException e) {
 
         } finally {
             worker.shutdownGracefully();
             boss.shutdownGracefully();
 
-            if (lifecycle != null) {
+            for (ServerLifecycle lifecycle : lifecycles) {
                 lifecycle.onShutdown();
             }
         }
@@ -121,12 +151,10 @@ public class MasterServer {
 
     public void forceClose() {
 
-        LogManager.info("MasterServer.forceClose");
+        logger.warn("MasterServer.forceClose");
         if (serverSocket != null) {
             serverSocket.close().syncUninterruptibly();
         }
-        LogManager.info("Server.close success");
-
     }
 
 
@@ -135,6 +163,10 @@ public class MasterServer {
         void onBindSuccess(String ip, int port);
 
         void onShutdown();
+
+        void onReceiveConnection(SocketChannel socketChannel);
+
+        void onConnectionClosed(SocketChannel socketChannel);
 
     }
 

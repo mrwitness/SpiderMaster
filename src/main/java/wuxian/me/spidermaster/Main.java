@@ -2,14 +2,12 @@ package wuxian.me.spidermaster;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.FileUtil;
 import wuxian.me.spidercommon.util.ProcessUtil;
 import wuxian.me.spidercommon.util.ShellUtil;
 import wuxian.me.spidercommon.util.SignalManager;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
-import wuxian.me.spidermaster.biz.control.Agent;
 import wuxian.me.spidermaster.biz.control.AgentRecorder;
 import wuxian.me.spidermaster.biz.control.StatusEnum;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
@@ -25,33 +23,35 @@ import java.util.List;
  */
 public class Main {
 
+    static Logger logger = Logger.getLogger(Main.class);
+
     private SignalManager signalManager = new SignalManager();
 
     public void start() {
 
         PropertyConfigurator.configure(FileUtil.getCurrentPath() + "/conf/log4j.properties");
 
-        LogManager.info("init SpiderConfig");
+        logger.info("init SpiderConfig");
         SpiderConfig.init();
 
-        LogManager.info("init shellutil");
+        logger.info("init shellutil");
         ShellUtil.init();
 
-        LogManager.info("init signal manager");
+        logger.info("init signal manager");
         signalManager.init();
 
         if (SpiderConfig.spiderMode == 0) {
             startAgent();
 
         } else if (SpiderConfig.spiderMode == 1) {
-            startMaster();
+            startServer();
 
         }
 
         SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
 
             public void onSystemKilled() {
-                LogManager.info("onSystemKilled");
+                logger.info("onSystemKilled");
 
                 ShellUtil.killProcessBy(ProcessUtil.getCurrentProcessId());
             }
@@ -59,7 +59,7 @@ public class Main {
     }
 
     private void startAgent() {
-        LogManager.info("startAgent...");
+        logger.info("startAgent...");
 
         SpiderAgent.init();
 
@@ -106,33 +106,20 @@ public class Main {
         });
     }
 
-    private void startMaster() {
-        LogManager.info("start master server...");
+    private void startServer() {
+        logger.info("start master server...");
 
-        final MasterServer server = new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort, new MasterServer.ServerLifecycle() {
-            @Override
-            public void onBindSuccess(String ip, int port) {
-                AgentRecorder.init();
-                AgentRecorder.startPrintThread();
-            }
-
-            @Override
-            public void onShutdown() {
-
-            }
-        });
+        final MasterServer server = new MasterServer(SpiderConfig.masterIp, SpiderConfig.masterPort);
 
         SignalManager.registerOnSystemKill(new SignalManager.OnSystemKill() {
-            @Override
+            //@Override
             public void onSystemKilled() {
                 server.forceClose();
             }
         });
 
         server.start();
-
     }
-
 
     public static void main(String[] args) {
         new Main().start();

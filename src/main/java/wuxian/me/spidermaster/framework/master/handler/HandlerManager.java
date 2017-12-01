@@ -1,6 +1,7 @@
 package wuxian.me.spidermaster.framework.master.handler;
 
 import com.sun.istack.internal.Nullable;
+import org.apache.log4j.Logger;
 import wuxian.me.spidercommon.log.LogManager;
 import wuxian.me.spidercommon.util.ClassHelper;
 import wuxian.me.spidermaster.framework.common.InitEnvException;
@@ -19,6 +20,7 @@ import java.util.Set;
  */
 public class HandlerManager {
 
+    static Logger logger = Logger.getLogger("server");
     private static boolean inited = false;
 
     private static Map<String, IRpcRequestHandler> handlerMap = new HashMap<String, IRpcRequestHandler>();
@@ -69,7 +71,7 @@ public class HandlerManager {
 
             IRpcRequestHandler o = (IRpcRequestHandler) constructor.newInstance(null);
             handlerMap.put(o.getMethodName(), o);
-            LogManager.info("find handler: " + clazz.getSimpleName() + " which can handle " + o.getMethodName() + " request");
+            logger.debug("find handler: " + clazz.getSimpleName() + " which can handle " + o.getMethodName() + " request");
 
             return;
 

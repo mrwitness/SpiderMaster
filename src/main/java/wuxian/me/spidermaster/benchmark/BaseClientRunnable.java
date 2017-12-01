@@ -1,9 +1,5 @@
 package wuxian.me.spidermaster.benchmark;
 
-/**
- * nfs-rpc Apache License http://code.google.com/p/nfs-rpc (c) 2011
- */
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -14,9 +10,9 @@ import java.util.concurrent.CyclicBarrier;
 
 // Simple Processor RPC Benchmark Client Thread
 //Todo:进行社会主义改造
-public abstract class AbClientRunnable implements ClientRunnable {
+public abstract class BaseClientRunnable implements ClientRunnable {
 
-    private static final Log LOGGER = LogFactory.getLog(AbClientRunnable.class);
+    private static final Log LOGGER = LogFactory.getLog(BaseClientRunnable.class);
 
     private CyclicBarrier barrier;
 
@@ -49,8 +45,8 @@ public abstract class AbClientRunnable implements ClientRunnable {
 
     //private ServiceFactory serviceFactory = new ServiceFactory();
 
-    public AbClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
-                            CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime) {
+    public BaseClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
+                              CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime) {
 
         this.barrier = barrier;
         this.latch = latch;

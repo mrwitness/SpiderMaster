@@ -29,6 +29,23 @@ import static org.junit.Assert.*;
 public class MainTest {
 
     @Test
+    public void testNanotime() {
+
+        long begin = System.nanoTime();
+        System.out.println(begin);
+
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+
+        }
+
+        long end = System.nanoTime();
+        System.out.println(end);
+        System.out.println("end-start: " + (end - begin));
+    }
+
+    @Test
     public void testSerialize() throws Exception {
         List<Class<?>> classList = new ArrayList<Class<?>>();
         classList.add(RpcResponse.class);

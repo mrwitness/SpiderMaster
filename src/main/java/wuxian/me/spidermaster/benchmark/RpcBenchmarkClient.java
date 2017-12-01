@@ -10,7 +10,7 @@ import java.util.concurrent.CyclicBarrier;
  * --> 在这里是@SimpleProcessorBenchmarkClientRunnable
  * --> 实际项目里需要 新建一个实现AbstractClientRunnable的类 然后配置到xxx.properties.classname
  */
-public class RpcBenchmarkClient extends AbstractBenchmarkClient {
+public class RpcBenchmarkClient extends BaseConsumerBenchmark {
 
     public static void main(String[] args) throws Exception {
         new RpcBenchmarkClient().run(args);
@@ -18,8 +18,8 @@ public class RpcBenchmarkClient extends AbstractBenchmarkClient {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public ClientRunnable getClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
-                                            CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+    public ClientRunnable createClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
+                                               CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
         String runnable = properties.getProperty("classname");
         Class[] parameterTypes = new Class[]{String.class, int.class, int.class, int.class, CyclicBarrier.class,
                 CountDownLatch.class, long.class, long.class};

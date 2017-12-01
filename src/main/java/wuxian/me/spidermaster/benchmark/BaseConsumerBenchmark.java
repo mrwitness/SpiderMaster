@@ -24,11 +24,11 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * 实际工作流程
  * 1 读取xxx.properties文件 拿到serverip,serverport,concurrents
- * 2 开启concurrents个线程调用 getClientRunnable.run --> getClientRunnable由子类实现
+ * 2 开启concurrents个线程调用 createClientRunnable.run --> getClientRunnable由子类实现
  * 3 根据2的特性,这个类可以被我的benchmark复用
  **/
 //Todo:在我的benchmark中复用这个类
-public abstract class AbstractBenchmarkClient {
+public abstract class BaseConsumerBenchmark {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -73,38 +73,34 @@ public abstract class AbstractBenchmarkClient {
     // > 1000
     private static long above1000sum;
 
-    static {
-        //Todo
-        ConfigUtils.initFromFile("benchmark.properties");
-    }
-
-
     public Properties properties = ConfigUtils.getProperties();
 
 
     public void run(String[] args) throws Exception {
 
-        final String serverIP = properties.getProperty("serverip");
-        final int serverPort = Integer.parseInt(properties.getProperty("serverport"));
-        final int concurrents = Integer.parseInt(properties.getProperty("concurrents"));
-        final int timeout = Integer.parseInt(properties.getProperty("timeout"));
-        runtime = Integer.parseInt(properties.getProperty("runtime"));
+        final String host = properties.getProperty("serverip", "127.0.0.1");
+        final int port = Integer.parseInt(properties.getProperty("serverport"), 3434);
+        final int concurrents = Integer.parseInt(properties.getProperty("concurrents"), 100);
+        final int timeout = Integer.parseInt(properties.getProperty("timeout"), 100);
+
+        runtime = Integer.parseInt(properties.getProperty("runtime"), 30);
         final long endtime = System.nanoTime() / 1000L + runtime * 1000 * 1000L;
+        //Todo:?????
         final int clientNums = Integer.parseInt(properties.getProperty("connectionnums"));
 
-        // Print start info
-        Date currentDate = new Date();
+        Date current = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
+        calendar.setTime(current);
         calendar.add(Calendar.SECOND, runtime);
-        StringBuilder startInfo = new StringBuilder(dateFormat.format(currentDate));
-        startInfo.append(" ready to start client benchmark,server is ");
-        startInfo.append(serverIP).append(":").append(serverPort);
-        startInfo.append(",concurrents is: ").append(concurrents);
-        startInfo.append(",clientNums is: ").append(clientNums);
-        startInfo.append(",timeout is:").append(timeout);
-        startInfo.append(" s,the benchmark will end at:").append(dateFormat.format(calendar.getTime()));
-        System.out.println(startInfo.toString());
+
+        StringBuilder benchmarkStartInfo = new StringBuilder(dateFormat.format(current)); //Print start info
+        benchmarkStartInfo.append(" ready to start client benchmark,server is ");
+        benchmarkStartInfo.append(host).append(":").append(port);
+        benchmarkStartInfo.append(",concurrents is: ").append(concurrents);
+        benchmarkStartInfo.append(",clientNums is: ").append(clientNums);
+        benchmarkStartInfo.append(",timeout is:").append(timeout);
+        benchmarkStartInfo.append(" s,the benchmark will end at:").append(dateFormat.format(calendar.getTime()));
+        System.out.println(benchmarkStartInfo.toString());
 
         CyclicBarrier barrier = new CyclicBarrier(concurrents);
         CountDownLatch latch = new CountDownLatch(concurrents);
@@ -112,13 +108,12 @@ public abstract class AbstractBenchmarkClient {
         // benchmark start after thirty seconds,let java app warm up
         long beginTime = System.nanoTime() / 1000L + 30 * 1000 * 1000L;
         for (int i = 0; i < concurrents; i++) {
-            ClientRunnable runnable = getClientRunnable(serverIP, serverPort, clientNums, timeout, barrier, latch,
+            ClientRunnable runnable = createClientRunnable(host, port, clientNums, timeout, barrier, latch,
                     beginTime, endtime);
             runnables.add(runnable);
         }
 
         startRunnables(runnables);
-
         latch.await();
 
         // read results & add all
@@ -238,9 +233,9 @@ public abstract class AbstractBenchmarkClient {
         System.exit(0);
     }
 
-    public abstract ClientRunnable getClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
-                                                     CyclicBarrier barrier, CountDownLatch latch, long startTime,
-                                                     long endTime) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException;
+    public abstract ClientRunnable createClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
+                                                        CyclicBarrier barrier, CountDownLatch latch, long startTime,
+                                                        long endTime) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException;
 
     protected void startRunnables(List<ClientRunnable> runnables) {
         for (int i = 0; i < runnables.size(); i++) {

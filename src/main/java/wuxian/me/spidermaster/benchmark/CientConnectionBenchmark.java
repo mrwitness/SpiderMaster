@@ -2,6 +2,7 @@ package wuxian.me.spidermaster.benchmark;
 
 import com.sun.istack.internal.Nullable;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
+import wuxian.me.spidermaster.framework.common.SpiderConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ public class CientConnectionBenchmark {
     public Properties properties = ConfigUtils.getProperties();
 
     public void run(String[] args) throws Exception {
+
+        SpiderConfig.init();//Todo: initFrom
 
         String host = properties.getProperty("serverip", "127.0.0.1");
         int port = Integer.parseInt(properties.getProperty("serverport"), 3434);

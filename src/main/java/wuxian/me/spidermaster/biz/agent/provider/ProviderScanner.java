@@ -37,9 +37,7 @@ public class ProviderScanner {
     }
 
     public static void scanAndCollectProviders() {
-
         String pack = SpiderConfig.providerScan;
-
         if (pack == null || pack.length() == 0) {
             return;  //允许系统中没有provider
         }

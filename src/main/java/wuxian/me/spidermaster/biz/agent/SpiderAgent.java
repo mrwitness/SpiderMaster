@@ -3,7 +3,7 @@ package wuxian.me.spidermaster.biz.agent;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import com.sun.tools.internal.ws.processor.model.Response;
-import wuxian.me.spidercommon.log.LogManager;
+import org.apache.log4j.Logger;
 import wuxian.me.spidercommon.model.HttpUrlNode;
 import wuxian.me.spidercommon.util.IpPortUtil;
 import wuxian.me.spidermaster.biz.agent.provider.ProviderScanner;
@@ -29,6 +29,8 @@ import java.util.List;
  */
 public class SpiderAgent {
 
+    static Logger logger = Logger.getLogger("client");
+
     private Thread heartbeatThread;
     private boolean heartbeatStarted = false;
     private String serverIp;
@@ -37,9 +39,9 @@ public class SpiderAgent {
     private SpiderClient spiderClient;
 
     public static void init() {
-
-        LogManager.info("init SpiderConfig");
+        logger.info("init SpiderConfig");
         SpiderConfig.init();
+        SpiderClient.registerRpcHandler(Requestor.REQUEST_RESROURCE, new ResourceHandler());
     }
 
     public SpiderAgent() {
@@ -47,33 +49,26 @@ public class SpiderAgent {
     }
 
     public SpiderAgent(@NotNull String serverIp, int serverPort) {
-
         this.serverIp = serverIp;
-
         this.serverPort = serverPort;
-
         if (!IpPortUtil.isValidIpPort(serverIp + ":" + serverPort)) {
             throw new InitEnvException("Ip or Port not valid");
         }
-
         spiderClient = new SpiderClient();
-
     }
 
     public void start() {
 
-        LogManager.info("init NioEnv");
+        logger.info("init NioEnv");
         NioEnv.init();
 
-        LogManager.info("begin to scan providers");
+        logger.info("begin to scan providers");
         ProviderScanner.scanAndCollectProviders();
 
-        SpiderClient.registerRpcHandler(Requestor.REQUEST_RESROURCE, new ResourceHandler());
-
-        LogManager.info("init spider client");
+        logger.info("init spider client");
         spiderClient.init();
 
-        LogManager.info("spider client begin to connect to " + serverIp + ":" + serverPort + " ...");
+        logger.info("spider client begin to connect to " + serverIp + ":" + serverPort + " ...");
         spiderClient.asyncConnect(serverIp, serverPort);
     }
 

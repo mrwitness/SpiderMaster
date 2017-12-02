@@ -1,7 +1,14 @@
 package wuxian.me.spidermaster.benchmark;
 
 import com.sun.istack.internal.Nullable;
+import com.sun.tools.internal.xjc.model.nav.EagerNClass;
+import io.netty.channel.socket.SocketChannel;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import wuxian.me.spidercommon.util.FileUtil;
 import wuxian.me.spidermaster.biz.agent.SpiderAgent;
+import wuxian.me.spidermaster.framework.agent.connection.BaseConnectionLifecycle;
+import wuxian.me.spidermaster.framework.agent.connection.ConnectionLifecycle;
 import wuxian.me.spidermaster.framework.common.SpiderConfig;
 
 import java.util.ArrayList;
@@ -9,33 +16,45 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 
 public class CientConnectionBenchmark {
 
+    static {
+        PropertyConfigurator.configure(FileUtil.getCurrentPath() + "/conf/log4j.properties");
+    }
+
+    static Logger logger = Logger.getLogger(CientConnectionBenchmark.class);
+
     public Properties properties = ConfigUtils.getProperties();
+    private int warmup = 3;
 
-    public void run(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
+        new CientConnectionBenchmark().run();
+    }
 
-        SpiderConfig.init();//Todo: initFrom
+    public void run() throws Exception {
 
-        String host = properties.getProperty("serverip", "127.0.0.1");
-        int port = Integer.parseInt(properties.getProperty("serverport"), 3434);
-        int concurrents = Integer.parseInt(properties.getProperty("concurrents"), 100);
-        int timeout = Integer.parseInt(properties.getProperty("timeout"), 100);
+        SpiderConfig.initFrom(FileUtil.getCurrentPath() + "/conf/connection_benchmark.properties");
 
+        String host = properties.getProperty("masterIp", "127.0.0.1");
+        int port = Integer.parseInt(properties.getProperty("masterPort","3434"));
+        int concurrents = Integer.parseInt(properties.getProperty("concurrents","5"));
+        int timeout = Integer.parseInt(properties.getProperty("timeout","100"));
 
         CyclicBarrier barrier = new CyclicBarrier(concurrents);
         CountDownLatch latch = new CountDownLatch(concurrents);
         List<ClientRunnable> runnables = new ArrayList<ClientRunnable>();
 
         //1000*1000 ns = 1 ms
-        long beginTime = System.nanoTime() / 1000L + 30 * 1000 * 1000L;
+        long beginTime = System.nanoTime() / 1000L + warmup * 1000 * 1000L;
         for (int i = 0; i < concurrents; i++) {
             ClientRunnable runnable = new ConnectionRunnable(host, port, timeout, barrier
                     , latch, beginTime, beginTime + 30 * 1000 * 1000);   //默认运行30s
             runnables.add(runnable);
         }
 
+        logger.info("startRunnables");
         startRunnables(runnables);
         latch.await();
     }
@@ -61,6 +80,8 @@ public class CientConnectionBenchmark {
         private long startTime;
         private long endTime;
 
+        private CountDownLatch waitLatch;
+
         public ConnectionRunnable(String host, int port, int timeout
                 , CyclicBarrier barrier, CountDownLatch countDownLatch
                 , long startTime, long endTime) {
@@ -73,6 +94,7 @@ public class CientConnectionBenchmark {
             this.startTime = startTime;
             this.endTime = endTime;
 
+            waitLatch = new CountDownLatch(1);
         }
 
         private boolean running = true;
@@ -97,13 +119,60 @@ public class CientConnectionBenchmark {
                     break;
                 }
 
-                long currentTime = System.nanoTime() / 1000L;  //30s warn up
                 if (beginTime <= startTime) {
                     continue;
                 }
 
-                SpiderAgent agent = new SpiderAgent();
-                agent.start(); //Todo:社会主义改造
+                final SpiderAgent agent = new SpiderAgent(host, port);
+                agent.addConnectionCallback(new BaseConnectionLifecycle() {
+                    @Override
+                    public void onConnectionBuilded(SocketChannel channel) {
+
+                        logger.info("onConnectionBuilded,currentThread: " + Thread.currentThread().getName());
+                        waitLatch.countDown();
+
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+
+                        } finally {
+                            agent.forDisconnect();
+                        }
+                    }
+
+                    @Override
+                    public void onConnectFail() {
+                        logger.info("onConnectionFail,currentThread: " + Thread.currentThread().getName());
+                        waitLatch.countDown();
+                    }
+
+                    @Override
+                    public void onConnectException() {
+                        logger.info("onConnectException,currentThread: " + Thread.currentThread().getName());
+                        waitLatch.countDown();
+                    }
+
+                    @Override
+                    public void onConnectionClosed(SocketChannel channel, boolean isClient) {
+                        logger.info("onConnectionClosed,currentThread: " + Thread.currentThread().getName());
+                    }
+                });
+                logger.info("agent.connect,currentThread: " + Thread.currentThread().getName());
+                agent.connect();
+
+                long currentTime = System.nanoTime() / 1000L;
+                if (currentTime >= endTime) {
+                    running = false;
+                    break;
+                }
+                try {
+                    waitLatch.await((endTime - System.nanoTime()) / 1000, TimeUnit.MICROSECONDS);
+                } catch (InterruptedException e) {
+                    ;
+                } finally {
+                    running = false;
+                }
+
             }
 
         }

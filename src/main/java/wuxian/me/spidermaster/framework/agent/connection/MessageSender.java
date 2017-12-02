@@ -3,7 +3,7 @@ package wuxian.me.spidermaster.framework.agent.connection;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import wuxian.me.spidercommon.log.LogManager;
+import org.apache.log4j.Logger;
 import wuxian.me.spidermaster.framework.agent.IClient;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.rpc.RpcRequest;
@@ -17,6 +17,7 @@ import java.util.concurrent.*;
  */
 public class MessageSender {
 
+    static Logger logger = Logger.getLogger("client");
     private Map<String, IRpcCallback> callbackMap = new ConcurrentHashMap<String, IRpcCallback>();
     private Queue<RpcRequest> requestQueue = new LinkedBlockingQueue<RpcRequest>();
     private Map<String, RpcRequest> requestMap = new ConcurrentHashMap<String, RpcRequest>();
@@ -79,11 +80,11 @@ public class MessageSender {
                     }
 
                     RpcRequest rpcRequest = requestQueue.poll();
-                    LogManager.info("RPC Request send: " + rpcRequest.toString());
+                    logger.info("RPC Request send: " + rpcRequest.toString());
                     try {
                         client.channel().writeAndFlush(rpcRequest).await();
                     } catch (InterruptedException e) {
-                        LogManager.error("sender InterruptedExcepiton");
+                        logger.error("sender InterruptedExcepiton");
                     }
                 }
 
@@ -92,7 +93,7 @@ public class MessageSender {
         };
         dispatchThread.setName("dispatchRpcRequestThread");
 
-        LogManager.info("start dispatch rpc request thread ");
+        logger.debug("start dispatch rpc request thread ");
         dispatchThread.start();
 
         waitNodeManager = new WaitNodeManager(new WaitNodeManager.OnNodeTimeout() {
@@ -104,12 +105,11 @@ public class MessageSender {
             }
         });
 
-        LogManager.info("init waitNodeManager");
+        logger.debug("init waitNodeManager");
         waitNodeManager.init();
     }
 
     public void put(RpcRequest request, @Nullable IRpcCallback onRpcReques, Long timeout) {
-
         if (request == null) {
             return;
         }

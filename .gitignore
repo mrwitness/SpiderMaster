@@ -7,3 +7,5 @@ target
 .idea/vcs.xml
 lib
 logs
+conf/log4j*
+conf/log4j.properties

@@ -3,7 +3,7 @@ package wuxian.me.spidermaster.framework.agent.connection;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.socket.SocketChannel;
-import wuxian.me.spidercommon.log.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SpiderConnector implements Runnable {
 
+    static Logger logger = Logger.getLogger("client");
     private String host;
     private int port;
     private SocketChannel socketChannel;
@@ -22,15 +23,15 @@ public class SpiderConnector implements Runnable {
     private AtomicBoolean connected = new AtomicBoolean(false);
     private AtomicBoolean isConnecting = new AtomicBoolean(false);
 
-    private static List<ConnectionLifecycle> connectCallbackList = new ArrayList<ConnectionLifecycle>();
+    private List<ConnectionLifecycle> connectCallbackList = new ArrayList<ConnectionLifecycle>();
 
-    public static void addConnectCallback(ConnectionLifecycle callback) {
+    public void addConnectCallback(ConnectionLifecycle callback) {
         if (callback != null && !connectCallbackList.contains(callback)) {
             connectCallbackList.add(callback);
         }
     }
 
-    public static boolean removeCallback(ConnectionLifecycle callback) {
+    public boolean removeCallback(ConnectionLifecycle callback) {
 
         if (callback != null && connectCallbackList.contains(callback)) {
             connectCallbackList.remove(callback);
@@ -40,14 +41,13 @@ public class SpiderConnector implements Runnable {
         return false;
     }
 
-    private static SpiderConnector ins = new SpiderConnector();
+    public SpiderConnector() {
 
-    public static SpiderConnector getInstance() {
-        return ins;
+        nioEnv = new NioEnv();
+        nioEnv.init();
     }
 
-    private SpiderConnector() {
-    }
+    private NioEnv nioEnv = null;//new NioEnv();
 
     public void connectTo(final String host, final int port) {
         this.host = host;
@@ -74,7 +74,7 @@ public class SpiderConnector implements Runnable {
     public void run() {
         clientClose = false;
 
-        Bootstrap bootstrap = NioEnv.getAgentBootstrap(new NioEnv.OnChannelInit() {
+        Bootstrap bootstrap = nioEnv.getAgentBootstrap(new NioEnv.OnChannelInit() {
             @Override
             public void onChannelInit(SocketChannel channel) {
                 SpiderConnector.this.socketChannel = channel;
@@ -118,7 +118,7 @@ public class SpiderConnector implements Runnable {
         for (ConnectionLifecycle connectCallback : connectCallbackList) {
             connectCallback.onConnectionClosed(socketChannel, clientClose);
         }
-        LogManager.info("SpiderConnector.closed");
+        logger.info("SpiderConnector.closed");
     }
 
     public boolean isConnected() {

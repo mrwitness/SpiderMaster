@@ -11,6 +11,7 @@ import wuxian.me.spidermaster.biz.agent.provider.ResourceHandler;
 import wuxian.me.spidermaster.biz.provider.Requestor;
 import wuxian.me.spidermaster.biz.provider.Resource;
 import wuxian.me.spidermaster.framework.agent.SpiderClient;
+import wuxian.me.spidermaster.framework.agent.connection.ConnectionLifecycle;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.NioEnv;
 import wuxian.me.spidermaster.biz.control.StatusEnum;
@@ -57,24 +58,25 @@ public class SpiderAgent {
         spiderClient = new SpiderClient();
     }
 
-    public void start() {
+    public void addConnectionCallback(ConnectionLifecycle cb) {
+        if (spiderClient != null && cb != null) {
+            spiderClient.addConnectionCallback(cb);
+        }
+    }
 
-        logger.info("init NioEnv");
-        NioEnv.init();
-
-        logger.info("begin to scan providers");
-        ProviderScanner.scanAndCollectProviders();
-
+    public void connect() {
         logger.info("init spider client");
         spiderClient.init();
-
         logger.info("spider client begin to connect to " + serverIp + ":" + serverPort + " ...");
         spiderClient.asyncConnect(serverIp, serverPort);
     }
 
+    public void start() {
+        connect();
+    }
+
     //Todo: socket关闭时候的处理
     private void startHeartbeatThread() {
-
         if (heartbeatStarted) {
             return;
         }
@@ -134,10 +136,11 @@ public class SpiderAgent {
         if (classList == null) {
             classList = new ArrayList<Class<?>>();
         }
-
         if (nodeList == null) {
             nodeList = new ArrayList<HttpUrlNode>();
         }
+        logger.info("begin to scan providers");
+        ProviderScanner.scanAndCollectProviders();
 
 
         List<String> clazList = new ArrayList<String>();
@@ -149,7 +152,6 @@ public class SpiderAgent {
         for (HttpUrlNode node : nodeList) {
             patternList.add(node.baseUrl);
         }
-
 
         RpcRequest rpcRequest = new RegisterRequestProducer(clazList, patternList
                 , ProviderScanner.getProviderList()).produce();

@@ -3,6 +3,7 @@ package wuxian.me.spidermaster.framework.agent;
 import io.netty.channel.socket.SocketChannel;
 import org.apache.log4j.Logger;
 import wuxian.me.spidermaster.framework.agent.connection.BaseConnectionLifecycle;
+import wuxian.me.spidermaster.framework.agent.connection.ConnectionLifecycle;
 import wuxian.me.spidermaster.framework.agent.connection.MessageSender;
 import wuxian.me.spidermaster.framework.agent.request.IRpcCallback;
 import wuxian.me.spidermaster.framework.agent.connection.SpiderConnector;
@@ -25,13 +26,17 @@ public class SpiderClient implements IClient {
     private String serverIp;
     private int serverPort;
 
+    /**
+     * 1 初始化MessageSender
+     * 2 给SpiderConnector添加默认回调
+     */
     public void init() {
-        logger.info("init rpc message sender");
+        //logger.info("init rpc message sender");
         sender.init();
 
-        SpiderConnector.addConnectCallback(new BaseConnectionLifecycle() {
+        spiderConnector.addConnectCallback(new BaseConnectionLifecycle() {
             public void onConnectionBuilded(SocketChannel channel) {
-                logger.info("spider client success connect to server,connection: " + channel.toString());
+                logger.debug("spider client success connect to server,connection: " + channel.toString());
                 SpiderClient.this.channel = channel;  //save channel
 
                 SpiderClient.this.channel.pipeline()
@@ -42,7 +47,7 @@ public class SpiderClient implements IClient {
             }
 
             public void onConnectionClosed(SocketChannel channel, boolean isClient) {
-                logger.info("connection: " + channel.toString() + " closed by" + (isClient ? "client" : "server"));
+                logger.debug("connection: " + channel.toString() + " closed by" + (isClient ? "client" : "server"));
                 sender.onConnectionClosed(isClient);
                 if (!isClient) { //若是server主动断开的 那么立即重连
                     asyncConnect(serverIp, serverPort);
@@ -51,23 +56,32 @@ public class SpiderClient implements IClient {
         });
     }
 
+    public void addConnectionCallback(ConnectionLifecycle cb) {
+        if (spiderConnector != null && cb != null) {
+            spiderConnector.addConnectCallback(cb);
+        }
+    }
+
+
     public SocketChannel channel() {
         return channel;
     }
 
-    //Fixme: 这里的SpiderConnector竟然是singleton模式。。。
+    private SpiderConnector spiderConnector = new SpiderConnector();
+    
     public void asyncConnect(final String serverIp, final int serverPort) {
         this.serverIp = serverIp;
         this.serverPort = serverPort;
-        SpiderConnector.getInstance().connectTo(serverIp, serverPort);
+
+        spiderConnector.connectTo(serverIp, serverPort);
     }
 
     public boolean isConnected() {
-        return SpiderConnector.getInstance().isConnected();
+        return spiderConnector.isConnected();
     }
 
     public void forceDisconnect() {
-        SpiderConnector.getInstance().forceDisconnect();
+        spiderConnector.forceDisconnect();
     }
 
     public Object onReceiveMessage(RpcRequest request) {
@@ -76,7 +90,7 @@ public class SpiderClient implements IClient {
         }
 
         if (!requestMap.containsKey(request.methodName)) {
-            logger.error("fail to find handler to handle the request");
+            logger.info("fail to find handler to handle the request");
             return null;
         }
 

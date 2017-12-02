@@ -27,7 +27,7 @@ import java.util.concurrent.CyclicBarrier;
  * 2 开启concurrents个线程调用 createClientRunnable.run --> getClientRunnable由子类实现
  * 3 根据2的特性,这个类可以被我的benchmark复用
  **/
-//Todo:在我的benchmark中复用这个类
+
 public abstract class BaseConsumerBenchmark {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

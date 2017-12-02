@@ -66,8 +66,6 @@ public class ProviderScanner {
         }
 
         LogManager.info("ProviderScanner.check " + clazz.getName());
-
-
         Provider annotation = (Provider) (clazz.getAnnotation(Provider.class));
         if (annotation == null) {
             return;

@@ -1,12 +1,9 @@
 package wuxian.me.spidermaster.benchmark;
-
 import wuxian.me.spidercommon.util.FileUtil;
-
 import java.io.FileInputStream;
 import java.util.*;
 
 
-//
 public class ConfigUtils {
 
     private static volatile Properties PROPERTIES;
@@ -21,7 +18,7 @@ public class ConfigUtils {
                 if (PROPERTIES == null) {
                     Properties properties = new Properties();
                     try {
-                        FileInputStream input = new FileInputStream(FileUtil.getCurrentPath() + "/conf/benchmark.properties");
+                        FileInputStream input = new FileInputStream(FileUtil.getCurrentPath() + "/conf/connection_benchmark.properties");
                         try {
                             properties.load(input);
                         } finally {

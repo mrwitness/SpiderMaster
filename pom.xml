@@ -6,7 +6,7 @@
 
     <groupId>wuxian.me</groupId>
     <artifactId>SpiderMaster</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <properties>
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>

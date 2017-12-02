@@ -20,14 +20,14 @@ import java.util.List;
  */
 public class NioEnv {
 
-    private static EventLoopGroup group = null;
-    private static Bootstrap bootstrap = null;
-    private static boolean inited = false;
+    private EventLoopGroup group = null;
+    private Bootstrap bootstrap = null;
+    private boolean inited = false;
 
-    private NioEnv() {
+    public NioEnv() {
     }
 
-    public static void init() {
+    public void init() {
         inited = true;
 
         group = new NioEventLoopGroup();
@@ -38,16 +38,16 @@ public class NioEnv {
                 .option(ChannelOption.SO_KEEPALIVE, true);
     }
 
-    public static void unInit() {
+    public void unInit() {
         inited = false;
         group.shutdownGracefully();
     }
 
-    public static Bootstrap getAgentBootstrap() {
+    public Bootstrap getAgentBootstrap() {
         return getAgentBootstrap(null);
     }
 
-    public static Bootstrap getAgentBootstrap(final OnChannelInit initializer) {
+    public Bootstrap getAgentBootstrap(final OnChannelInit initializer) {
         if (!inited) {
             return null;
         }
